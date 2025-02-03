@@ -81,7 +81,7 @@ void IntakeController(){
         
         // Always run jam detection & color sorting
         int hue = clampOptical.get_hue();
-        pros::lcd::print(6, "RED: %d, BLUE: %d", RingColorCheck('R', hue), RingColorCheck('B', hue));
+        pros::lcd::print(6, "BLUE: %d, RED: %d", RingColorCheck('R', hue), RingColorCheck('B', hue));
         pros::lcd::print(7, "Intake Running: %d", IsIntakeRunning());
 
         // reverse intake when a ring is detected
