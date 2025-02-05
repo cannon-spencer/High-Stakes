@@ -1,16 +1,33 @@
 #include "main.h"
 #include "subsystems.hpp"
 
+// Enum for Alliance Modes
+AllianceMode intakeMode = AllianceMode::BLUE;
 
-int INTAKE_SPEED = 127;
-int F_INTAKE_SPEED  = 127;
+// Intake Constants
+const int INTAKE_SPEED = 127;
+const int F_INTAKE_SPEED  = 127;
 
-char allianceColor = 'B';
+// Timestamp tracking when intake was last commanded to run
+const int INTAKE_SPINUP_TIME = 500;
+int intakeStartTime = 0;
+bool wasIntakeStopped = true;
 
 
 void SetIntake(int f_intake, int m_intake){
     frontIntake.move(f_intake);
     mainIntake.move(m_intake);
+
+    // If intake was previously stopped and is now starting, update the timestamp
+    if (wasIntakeStopped && (f_intake != 0 || m_intake != 0)) {
+        intakeStartTime = pros::millis();
+        wasIntakeStopped = false; 
+    } 
+    // If intake is stopped, set flag so next run can update timestamp
+    else if (f_intake <= 0 && m_intake <= 0) {
+        wasIntakeStopped = true;
+    }
+    
 }
 
 void RunIntake(){ SetIntake(F_INTAKE_SPEED, INTAKE_SPEED); }
@@ -25,30 +42,59 @@ void IntakeUp(){ intakePiston.set_value(true); }
 
 void IntakeDown(){ intakePiston.set_value(false); }
 
-bool IsIntakeRunning(){
-    double intakeVelocity = mainIntake.get_actual_velocity();
-    double velocityThreshold = 150.00;
-    return (std::abs(intakeVelocity) > velocityThreshold);
+bool IsIntakeRunning() {
+    double mainIntakeVelocity = mainIntake.get_actual_velocity();
+    double frontIntakeVelocity = frontIntake.get_actual_velocity();
+    double velocityThreshold = 50.0;
+
+    // Return true only if the main intake is running
+    return (std::abs(mainIntakeVelocity) > velocityThreshold);
 }
 
 
-bool RingColorCheck(char aColor, double hue) {
-    // Define hue ranges for each color
-    double blue_min = 165, blue_max = 250; // Blue range
-    double red_min = 1, red_max = 20;      // Red range
+bool RingColorCheck(AllianceMode aMode, double hue) {
+    double blue_min = 165, blue_max = 250;
+    double red_min = 1, red_max = 20;
 
-    // Check the hue against the range based on the color input
-    switch (aColor) {
-    case 'R': // Red alliance -- Filter out blue
-        return (hue >= blue_min && hue <= blue_max);
-    case 'B': // Blue alliance -- Filter out red
-        return (hue >= red_min && hue <= red_max);
+    switch (aMode) {
+        case AllianceMode::RED: return (hue >= blue_min && hue <= blue_max);
+        case AllianceMode::BLUE: return (hue >= red_min && hue <= red_max);
+        case AllianceMode::OFF: return false;
     }
-
     return false;
 }
 
+void DisplayAllianceMode(){
+    switch (intakeMode) {
+        case AllianceMode::BLUE: master.print(0, 0, "ALLIANCE: BLUE"); break;
+        case AllianceMode::RED: master.print(0, 0, "ALLIANCE: RED "); break;
+        case AllianceMode::OFF: master.print(0, 0, "ALLIANCE: OFF "); break;
+    }
+}
+
+void CycleAllianceMode() {
+    // Cycle to next mode
+    switch (intakeMode) {
+        case AllianceMode::BLUE: intakeMode = AllianceMode::RED; break;
+        case AllianceMode::RED: intakeMode = AllianceMode::OFF; break;
+        case AllianceMode::OFF: intakeMode = AllianceMode::BLUE; break;
+    }
+
+    // Display the selected mode on the controller
+    DisplayAllianceMode();
+}
+
+void SetAllianceMode(AllianceMode aMode) {
+    intakeMode = aMode;
+    DisplayAllianceMode();
+}
+
+
 void IntakeController(){
+
+    // Display mode on Startup
+    DisplayAllianceMode();
+
     while(1){
         
         // Driver Control Task
@@ -57,7 +103,7 @@ void IntakeController(){
             // run main intake
             if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
                 RunIntake();
-            } else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+            } else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_B)){
                 ReverseIntake();
             } else {
                 StopIntake();
@@ -75,24 +121,38 @@ void IntakeController(){
             else
                 IntakeDown();
 
-            // Emergency Swap Color -- display to controller 
+            // Manual Allianace Color Swap -- almost never needed
+            if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)) {
+                CycleAllianceMode();
+            }
 
         }
         
         // Always run jam detection & color sorting
         int hue = clampOptical.get_hue();
-        pros::lcd::print(6, "BLUE: %d, RED: %d", RingColorCheck('R', hue), RingColorCheck('B', hue));
+        pros::lcd::print(6, "BLUE: %d, RED: %d", RingColorCheck(AllianceMode::RED, hue), RingColorCheck(AllianceMode::BLUE, hue));
         pros::lcd::print(7, "Intake Running: %d", IsIntakeRunning());
 
-        // reverse intake when a ring is detected
-        if (RingColorCheck(allianceColor, intakeOptical.get_hue())){
-            pros::delay(230);
-            StopIntake();
-            pros::delay(150);
-            RunIntake();
+        // Only color sort if the intake is running!
+        if(IsIntakeRunning()){
+            // reverse intake when a ring is detected
+            // Dont eject while in scoreMode (wont work)
+            if (!scoreMode && RingColorCheck(intakeMode, intakeOptical.get_hue())){
+                pros::delay(230);
+                StopIntake();
+                pros::delay(150);
+                RunIntake();
+            }
+        } else {
+            // should the intake be running?? -- Jam detection
+            // First check if the intake is set to run, then wait for a short period for it to spinup
+            if(std::abs(mainIntake.get_target_velocity()) > 0 && 
+                (pros::millis() - intakeStartTime) > INTAKE_SPINUP_TIME){
+                ReverseIntake();
+                pros::delay(150);
+                RunIntake();
+            }
         }
-
-        // if scoremode and ring detected, send lift pid down, eject, wait, and fix the position back
 
         pros::delay(ez::util::DELAY_TIME);
     }

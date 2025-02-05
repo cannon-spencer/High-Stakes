@@ -19,11 +19,16 @@ void LiftController(){
         // Op-Control Task
         if(!pros::competition::is_autonomous()){
             // Toggle Scoring Mode Button 
-            if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2))
+            if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
+                if(scoreMode)
+                    master.rumble(".");
+                else
+                    master.rumble("..");
+                
                 scoreMode = !scoreMode;
+            }
             
             // Send lift to score while holding, cancel target when released
-            int ladyBrownError;
             if(scoreMode && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
                 liftPID.target_set(WALLSTAKE_POSITION);
             } else {

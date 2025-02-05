@@ -14,6 +14,9 @@
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+  IntakeTask.suspend();
+  LiftTask.suspend();
+
   // Print our branding over your terminal :D
   ez::ez_template_print();
 
@@ -28,7 +31,7 @@ void initialize() {
   chassis.odom_tracker_left_set(&vert_tracker);
 
   // Configure your chassis controls
-  chassis.opcontrol_curve_buttons_toggle(true);   // Enables modifying the controller curve with buttons on the joysticks
+  chassis.opcontrol_curve_buttons_toggle(false);   // Enables modifying the controller curve with buttons on the joysticks
   chassis.opcontrol_drive_activebrake_set(0.0);   // Sets the active brake kP. We recommend ~2.  0 will disable.
   chassis.opcontrol_curve_default_set(0.0, 0.0);  // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
 
@@ -105,8 +108,8 @@ void autonomous() {
   chassis.drive_sensor_reset();                  // Reset drive sensors to 0
   chassis.odom_xyt_set(0_in, 0_in, 0_deg);       // Set the current position, you can start at a specific position with this
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);     // Set motors to hold.  This helps autonomous consistency
-  //IntakeTask.resume();
-  //LiftTask.resume();
+  IntakeTask.resume();
+  LiftTask.resume();
   ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
 }
 
@@ -218,8 +221,15 @@ void opcontrol() {
   chassis.drive_brake_set(MOTOR_BRAKE_COAST);
 
   // ensure tasks are resumed before match
-  //IntakeTask.resume();
-  //LiftTask.resume();
+  IntakeTask.resume();
+  LiftTask.resume();
+
+  const int DRIVER_CONTROL_TIME = 90000;                      // 90 seconds
+  const int WARNING_START_TIME = DRIVER_CONTROL_TIME - 35000; // 35 seconds
+  const int WARNING_END_TIME = DRIVER_CONTROL_TIME - 30000;   // 30 seconds
+  const int RUMBLE_INTERVAL = 1000;                           // 1 second interval
+  int matchStartTime = pros::millis();                        // Store the start time
+  int lastRumbleTime = 0;                                     // Track last rumble event
 
   while (true) {
     // Gives you some extras to make EZ-Template ezier
@@ -228,6 +238,21 @@ void opcontrol() {
     ChassisController();
     DoinkerController();
     ClampController();
+
+    // Rumble Controller in Competition
+    if(pros::competition::is_connected()){
+      // Track elapsed match time
+      int elapsedTime = pros::millis() - matchStartTime;
+
+      // If we're in the 5-second warning window (35s - 30s remaining)
+      if (elapsedTime >= WARNING_START_TIME && elapsedTime <= WARNING_END_TIME) {
+          // If 1 second has passed since the last rumble, trigger another
+          if (pros::millis() - lastRumbleTime >= RUMBLE_INTERVAL) {
+              master.rumble("-");
+              lastRumbleTime = pros::millis();
+          }
+      }
+    }
 
     pros::delay(ez::util::DELAY_TIME);
   }

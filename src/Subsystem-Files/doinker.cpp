@@ -7,7 +7,7 @@ void DoinkerUp(){ doinkerPiston.set_value(false); }
 
 void DoinkerController(){
     // Doinker Controller -- holding 
-    if(master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT))
+    if(master.get_digital(pros::E_CONTROLLER_DIGITAL_DOWN))
         DoinkerDown();
     else
         DoinkerUp();

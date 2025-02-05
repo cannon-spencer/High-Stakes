@@ -6,7 +6,7 @@ void CloseClamp(){ clampPiston.set_value(true); }
 
 void ClampController(){
     // Clamp Controller -- open only when holding 
-    if(master.get_digital(pros::E_CONTROLLER_DIGITAL_Y))
+    if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2))
         OpenClamp();
     else
         CloseClamp();
