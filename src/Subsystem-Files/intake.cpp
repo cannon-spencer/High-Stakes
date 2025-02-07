@@ -9,8 +9,10 @@ const int INTAKE_SPEED = 127;
 const int F_INTAKE_SPEED  = 127;
 
 // Timestamp tracking when intake was last commanded to run
-const int INTAKE_SPINUP_TIME = 500;
+const int INTAKE_SPINUP_TIME = 700;
+const int JAM_DETECTION_DELAY = 500; 
 int intakeStartTime = 0;
+int lastRunningTime = 0;
 bool wasIntakeStopped = true;
 
 
@@ -38,14 +40,14 @@ void ReverseIntake(){ SetIntake(-F_INTAKE_SPEED, -INTAKE_SPEED); }
 
 void UnhookIntake(){ mainIntake.move_relative(-100, INTAKE_SPEED); }
 
-void IntakeUp(){ intakePiston.set_value(true); }
+void IntakeUp(){ intakePiston.set_value(false); }
 
-void IntakeDown(){ intakePiston.set_value(false); }
+void IntakeDown(){ intakePiston.set_value(true); }
 
 bool IsIntakeRunning() {
     double mainIntakeVelocity = mainIntake.get_actual_velocity();
     double frontIntakeVelocity = frontIntake.get_actual_velocity();
-    double velocityThreshold = 50.0;
+    double velocityThreshold = 100.0;
 
     // Return true only if the main intake is running
     return (std::abs(mainIntakeVelocity) > velocityThreshold);
@@ -129,25 +131,28 @@ void IntakeController(){
         }
         
         // Always run jam detection & color sorting
-        int hue = clampOptical.get_hue();
+        int hue = intakeOptical.get_hue();
         pros::lcd::print(6, "BLUE: %d, RED: %d", RingColorCheck(AllianceMode::RED, hue), RingColorCheck(AllianceMode::BLUE, hue));
         pros::lcd::print(7, "Intake Running: %d", IsIntakeRunning());
 
         // Only color sort if the intake is running!
         if(IsIntakeRunning()){
+            lastRunningTime = pros::millis();
+
             // reverse intake when a ring is detected
-            // Dont eject while in scoreMode (wont work)
             if (!scoreMode && RingColorCheck(intakeMode, intakeOptical.get_hue())){
+                master.rumble(".");
                 pros::delay(230);
                 StopIntake();
                 pros::delay(150);
                 RunIntake();
             }
         } else {
-            // should the intake be running?? -- Jam detection
-            // First check if the intake is set to run, then wait for a short period for it to spinup
-            if(std::abs(mainIntake.get_target_velocity()) > 0 && 
-                (pros::millis() - intakeStartTime) > INTAKE_SPINUP_TIME){
+            // Check if intake should be running but hasn't moved for the delay time
+            if (std::abs(mainIntake.get_target_velocity()) > 0 && 
+                (pros::millis() - lastRunningTime) > JAM_DETECTION_DELAY && 
+                (pros::millis() - intakeStartTime) > INTAKE_SPINUP_TIME) {
+                
                 ReverseIntake();
                 pros::delay(150);
                 RunIntake();

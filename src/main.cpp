@@ -65,8 +65,9 @@ void initialize() {
   ez::as::initialize();
   master.rumble(chassis.drive_imu_calibrated() ? "." : "---");
 
-  //IntakeTask.suspend();
-  //LiftTask.suspend();
+  // Update optical sensor every 15ms instead of every 100ms
+  intakeOptical.set_integration_time(15);
+
 }
 
 /**

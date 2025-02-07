@@ -10,8 +10,8 @@ pros::ADIDigitalOut intakePiston('H');
 pros::ADIDigitalOut doinkerPiston('F');
 pros::ADIDigitalOut clampPiston('E');
 
-pros::Optical clampOptical(19);
-pros::Optical intakeOptical(3);
+pros::Optical clampOptical(3);
+pros::Optical intakeOptical(19);
 
 // Chassis constructor
 ez::Drive chassis(
