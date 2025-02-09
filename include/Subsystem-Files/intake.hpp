@@ -1,12 +1,10 @@
 #pragma once
 
 enum class AllianceMode { BLUE, RED, OFF };
+enum class IntakeSpeed {FAST, SLOW, STOP, REVERSE, UNHOOK};
 
 void SetIntake(int frontIntake, int mainIntake);
-void RunIntake();
-void StopIntake();
-void ReverseIntake();
-void UnhookIntake();
+void RunIntake(IntakeSpeed speed);
 void IntakeUp();
 void IntakeDown();
 bool RingColorCheck(AllianceMode aMode, double hue);

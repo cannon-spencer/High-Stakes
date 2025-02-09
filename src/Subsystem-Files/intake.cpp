@@ -32,13 +32,25 @@ void SetIntake(int f_intake, int m_intake){
     
 }
 
-void RunIntake(){ SetIntake(F_INTAKE_SPEED, INTAKE_SPEED); }
-
-void StopIntake(){ SetIntake(0, 0); }
-
-void ReverseIntake(){ SetIntake(-F_INTAKE_SPEED, -INTAKE_SPEED); }
-
-void UnhookIntake(){ mainIntake.move_relative(-100, INTAKE_SPEED); }
+void RunIntake(IntakeSpeed speed) {
+    switch (speed) {
+        case IntakeSpeed::FAST:
+            SetIntake(F_INTAKE_SPEED, INTAKE_SPEED);
+            break;
+        case IntakeSpeed::SLOW:
+            SetIntake(F_INTAKE_SPEED / 2, INTAKE_SPEED / 2); // Adjust as needed
+            break;
+        case IntakeSpeed::STOP:
+            SetIntake(0, 0);
+            break;
+        case IntakeSpeed::REVERSE:
+            SetIntake(-F_INTAKE_SPEED, -INTAKE_SPEED);
+            break;
+        case IntakeSpeed::UNHOOK:
+            mainIntake.move_relative(-100, INTAKE_SPEED);
+            break;
+    }
+}
 
 void IntakeUp(){ intakePiston.set_value(false); }
 
@@ -111,6 +123,8 @@ void IntakeWait(AllianceMode aMode, int maxWaitTimeMs) {
         }
         pros::delay(10);
     }
+
+    RunIntake(IntakeSpeed::STOP);
 }
 
 
@@ -128,16 +142,16 @@ void IntakeController(){
 
             // run main intake
             if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
-                RunIntake();
+                RunIntake(IntakeSpeed::FAST);
             } else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_B)){
-                ReverseIntake();
+                RunIntake(IntakeSpeed::REVERSE);
             } else {
-                StopIntake();
+                RunIntake(IntakeSpeed::STOP);
             }
 
             // Reverse intake slightly when scoring with lady brown
             if(scoreMode && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)){
-                ReverseIntake();
+                RunIntake(IntakeSpeed::REVERSE);
                 pros::delay(30);
             } 
 
@@ -170,17 +184,17 @@ void IntakeController(){
                 // throw ring off the top
                 if(!scoreMode){
                     pros::delay(230);
-                    StopIntake();
+                    RunIntake(IntakeSpeed::STOP);
                     pros::delay(150);
-                    RunIntake();
+                    RunIntake(IntakeSpeed::FAST);
                 } 
                 
                 // reverse out of the front 
                 else {
                     pros::delay(40);
-                    ReverseIntake();
+                    RunIntake(IntakeSpeed::REVERSE);
                     pros::delay(425);
-                    RunIntake();
+                    RunIntake(IntakeSpeed::FAST);
                 }
             }
         } else {
@@ -191,9 +205,9 @@ void IntakeController(){
                 
                 // make sure we're not scoring lady brown rings
                 if(!scoreMode){
-                    ReverseIntake();
+                    RunIntake(IntakeSpeed::REVERSE);
                     pros::delay(150);
-                    RunIntake();
+                    RunIntake(IntakeSpeed::FAST);
                 }
 
             }
