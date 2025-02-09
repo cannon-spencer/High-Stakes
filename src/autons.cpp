@@ -1,4 +1,5 @@
 #include "main.h"
+#include "subsystems.hpp"
 
 /////
 // For installation, upgrading, documentations, and tutorials, check out our website!
@@ -7,6 +8,7 @@
 
 // These are out of 127
 const int DRIVE_SPEED = 110;
+const int SLOW_DRIVE_SPEED = 50;
 const int TURN_SPEED = 100;
 const int SWING_SPEED = 110;
 
@@ -46,6 +48,182 @@ void default_constants() {
   chassis.odom_boomerang_dlead_set(0.625);     // This handles how aggressive the end of boomerang motions are
 
   chassis.pid_angle_behavior_set(ez::shortest);  // Changes the default behavior for turning, this defaults it to the shortest path there
+}
+
+
+void skills(){
+
+  // OpenClamp() - Opens Clamp
+  // CloseClamp() - Close Clamp
+  // RunIntake() - Intake On
+  // StopIntake() - Intake Off
+  // primeLadyBrown() - position for ring to go into lady brown
+  // returnLadyBrown() - bottom position (where it starts)
+  // wallstakeLadyBrown() - score (duh)
+
+  SetAllianceMode(AllianceMode::RED);
+
+  // face goal
+  chassis.pid_turn_set(27_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  // drive towards goal and pick it up
+  chassis.pid_drive_set(-38_in, DRIVE_SPEED, true);
+  chassis.pid_wait_until(-14_in);
+  chassis.pid_speed_max_set(30);
+  chassis.pid_wait_until(-29_in);
+  CloseClamp();
+  chassis.pid_wait();
+  chassis.pid_drive_set(2_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  
+  // collect first ring
+  RunIntake();
+  chassis.pid_turn_set(90_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // Turn to angle towards 2nd ring
+  chassis.pid_turn_set(225_deg, TURN_SPEED);
+  chassis.pid_wait();
+  
+  // Intake second and third rings
+  chassis.pid_drive_set(33.5_in, DRIVE_SPEED, true);
+  chassis.pid_wait_until(16_in);
+  chassis.pid_speed_max_set(35);
+  chassis.pid_wait();
+  chassis.pid_turn_set(268_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  // Score wallstake
+  AsyncLadyBrown(PRIMED_POSITION);
+  chassis.pid_drive_set(12_in, 30, true);
+  chassis.pid_wait();
+  pros::delay(400);
+  chassis.pid_drive_set(-4_in, 30, true);
+  chassis.pid_wait();
+  StopIntake();
+  AsyncLadyBrown(WALLSTAKE_POSITION);
+  chassis.pid_drive_set(5_in, 30, true);
+  chassis.pid_wait();
+  pros::delay(400);
+
+  //Drive back and intake next ring
+  chassis.pid_drive_set(-9_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  chassis.pid_turn_set(0_deg, TURN_SPEED);
+  chassis.pid_wait();
+  RunIntake();
+  chassis.pid_drive_set(50_in, DRIVE_SPEED, true);
+  chassis.pid_wait_until(30_in);
+  chassis.pid_speed_max_set(35);
+  chassis.pid_wait();
+  chassis.pid_drive_set(-3_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  //Intake corner and score goal
+  chassis.pid_turn_set(315_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_drive_set(23_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  chassis.pid_drive_set(-12_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  chassis.pid_turn_set(135_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_drive_set(-14_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  OpenClamp();
+  chassis.pid_drive_set(18_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  //Intake next stack
+  chassis.pid_turn_set(180_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_drive_set(70_in, DRIVE_SPEED, true);
+  chassis.pid_wait_until(50_in);
+  chassis.pid_speed_max_set(35);
+  IntakeWait(AllianceMode::RED, 1000);
+  chassis.pid_wait();
+  StopIntake();
+
+  // Turn and clamp goal
+  chassis.pid_turn_set(270_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_drive_set(-25_in, DRIVE_SPEED, true);
+  chassis.pid_wait_until(-10_in);
+  chassis.pid_speed_max_set(30);
+  chassis.pid_wait_until(-21_in);
+  CloseClamp();
+  pros::delay(300);
+  RunIntake();
+
+  
+
+ 
+  //chassis.pid_drive_set(15_in, 65, true);
+ // chassis.pid_wait();
+
+  // face wallstake
+ /* chassis.pid_turn_set(270_deg, 50);
+  chassis.pid_wait();
+  AsyncLadyBrown(PRIMED_POSITION);
+
+  // drive towards wallstake
+  chassis.pid_drive_set(10_in, SLOW_DRIVE_SPEED, true);
+  chassis.pid_wait();
+  pros::delay(700);
+  chassis.pid_drive_set(-6_in, SLOW_DRIVE_SPEED, true);
+  chassis.pid_wait();
+  pros::delay(400);
+  chassis.pid_drive_set(7_in, SLOW_DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  // score wallstake
+  WaitLadyBrown(WALLSTAKE_POSITION);
+
+  chassis.pid_drive_set(-10_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  chassis.pid_turn_set(45_deg, TURN_SPEED);
+  chassis.pid_wait();
+  WaitLadyBrown(BASE_POSITION);
+  /*chassis.pid_drive_set(43_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  chassis.pid_wait_until(30_in);
+  chassis.pid_speed_max_set(60);
+  chassis.pid_drive_set(-4_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  chassis.pid_turn_set(310_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_drive_set(49_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  chassis.pid_wait_until(40_in);
+  chassis.pid_speed_max_set(50);
+  chassis.pid_drive_set(-6_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  chassis.pid_turn_set(135_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_drive_set(-12_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  OpenClamp();
+  chassis.pid_drive_set(14_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(180, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_drive_set(75_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  chassis.pid_wait_until(60_in);
+  chassis.pid_speed_max_set(40);
+  StopIntake();
+  chassis.pid_turn_set(270, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_drive_set(-28_in, DRIVE_SPEED, true);
+  chassis.pid_wait_until(-10_in);
+  chassis.pid_speed_max_set(30);
+  chassis.pid_wait_until(-20_in);
+  CloseClamp();
+  chassis.pid_wait();*/
 }
 
 ///

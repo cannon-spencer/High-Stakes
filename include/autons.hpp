@@ -2,6 +2,8 @@
 
 void default_constants();
 
+void skills();
+
 void drive_example();
 void turn_example();
 void drive_and_turn();

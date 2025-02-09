@@ -92,6 +92,30 @@ void SetAllianceMode(AllianceMode aMode) {
 }
 
 
+void IntakeWait(AllianceMode aMode, int maxWaitTimeMs) {
+    int startTime = pros::millis(); // Record the start time
+
+    // Flip the alliance mode (because we're waiting for as specific color)
+    switch (aMode) {
+        case AllianceMode::BLUE:
+            aMode = AllianceMode::RED;
+            break;
+        case AllianceMode::RED:
+            aMode = AllianceMode::BLUE;
+            break;
+    }
+
+    while (!RingColorCheck(aMode, intakeOptical.get_hue())) {
+        if (pros::millis() - startTime >= maxWaitTimeMs) {
+            break; // Exit the loop if max wait time is reached
+        }
+        pros::delay(10);
+    }
+}
+
+
+
+
 void IntakeController(){
 
     // Display mode on Startup
@@ -140,12 +164,24 @@ void IntakeController(){
             lastRunningTime = pros::millis();
 
             // reverse intake when a ring is detected
-            if (!scoreMode && RingColorCheck(intakeMode, intakeOptical.get_hue())){
+            if (RingColorCheck(intakeMode, intakeOptical.get_hue())){
                 master.rumble(".");
-                pros::delay(230);
-                StopIntake();
-                pros::delay(150);
-                RunIntake();
+                
+                // throw ring off the top
+                if(!scoreMode){
+                    pros::delay(230);
+                    StopIntake();
+                    pros::delay(150);
+                    RunIntake();
+                } 
+                
+                // reverse out of the front 
+                else {
+                    pros::delay(40);
+                    ReverseIntake();
+                    pros::delay(425);
+                    RunIntake();
+                }
             }
         } else {
             // Check if intake should be running but hasn't moved for the delay time
@@ -153,9 +189,13 @@ void IntakeController(){
                 (pros::millis() - lastRunningTime) > JAM_DETECTION_DELAY && 
                 (pros::millis() - intakeStartTime) > INTAKE_SPINUP_TIME) {
                 
-                ReverseIntake();
-                pros::delay(150);
-                RunIntake();
+                // make sure we're not scoring lady brown rings
+                if(!scoreMode){
+                    ReverseIntake();
+                    pros::delay(150);
+                    RunIntake();
+                }
+
             }
         }
 

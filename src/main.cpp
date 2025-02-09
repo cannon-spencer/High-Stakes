@@ -33,7 +33,7 @@ void initialize() {
   // Configure your chassis controls
   chassis.opcontrol_curve_buttons_toggle(false);   // Enables modifying the controller curve with buttons on the joysticks
   chassis.opcontrol_drive_activebrake_set(0.0);   // Sets the active brake kP. We recommend ~2.  0 will disable.
-  chassis.opcontrol_curve_default_set(0.0, 0.0);  // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
+  chassis.opcontrol_curve_default_set(0.25, 1.25);  // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
 
   // Set the drive to your own constants from autons.cpp!
   default_constants();
@@ -44,6 +44,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
+      {"Skills\n\nRight side setup", skills},
       {"Drive\n\nDrive forward and come back", drive_example},
       {"Turn\n\nTurn 3 times.", turn_example},
       {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
@@ -67,6 +68,8 @@ void initialize() {
 
   // Update optical sensor every 15ms instead of every 100ms
   intakeOptical.set_integration_time(15);
+
+  liftPID.exit_condition_set(80, 50, 300, 150, 500, 500);
 
 }
 

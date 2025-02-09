@@ -3,11 +3,11 @@
 
 const int BASE_POSITION = 9000;
 const int PRIMED_POSITION = 10800;
-const int WALLSTAKE_POSITION = 22440;
+const int WALLSTAKE_POSITION = 22700;
 
 bool scoreMode = false;
 
-ez::PID liftPID{0.05, 0, 0.1, 0, "Lift"};  
+ez::PID liftPID{0.05, 0, 0.1, 0, "Lift"};
 
 void LiftController(){
 
@@ -49,3 +49,16 @@ void LiftController(){
     }
 }
 pros::Task LiftTask(LiftController);
+
+
+void WaitLadyBrown(int position){
+    liftPID.target_set(position);
+
+    // wait on the lift to exit
+    while (liftPID.exit_condition(true) == ez::RUNNING) {
+        pros::delay(ez::util::DELAY_TIME);
+    }
+
+}
+
+void AsyncLadyBrown(int position){ liftPID.target_set(position); }

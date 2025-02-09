@@ -8,6 +8,7 @@ void OpenClamp(){ clampPiston.set_value(false); }
 void CloseClamp(){ clampPiston.set_value(true); }
 
 bool IsGoalClamped(){
+    // Proximity 0-255, check for close proximity and correct color hue
     if(clampOptical.get_proximity() > 180){
         int hue = clampOptical.get_hue();
         if(hue > GOAL_HUE_MIN && hue < GOAL_HUE_MAX){
