@@ -2,6 +2,7 @@
 
 enum class AllianceMode { BLUE, RED, OFF };
 enum class IntakeSpeed {FAST, SLOW, STOP, REVERSE, UNHOOK};
+enum class IntakeExit {TIMEOUT, RING_DETECTED};
 
 void SetIntake(int frontIntake, int mainIntake);
 void RunIntake(IntakeSpeed speed);

@@ -38,7 +38,7 @@ void RunIntake(IntakeSpeed speed) {
             SetIntake(F_INTAKE_SPEED, INTAKE_SPEED);
             break;
         case IntakeSpeed::SLOW:
-            SetIntake(F_INTAKE_SPEED / 2, INTAKE_SPEED / 2); // Adjust as needed
+            SetIntake(F_INTAKE_SPEED / 2, INTAKE_SPEED / 2);
             break;
         case IntakeSpeed::STOP:
             SetIntake(0, 0);
@@ -104,7 +104,7 @@ void SetAllianceMode(AllianceMode aMode) {
 }
 
 
-void IntakeWait(AllianceMode aMode, int maxWaitTimeMs) {
+IntakeExit IntakeWait(AllianceMode aMode, int maxWaitTimeMs) {
     int startTime = pros::millis(); // Record the start time
 
     // Flip the alliance mode (because we're waiting for as specific color)
@@ -119,12 +119,14 @@ void IntakeWait(AllianceMode aMode, int maxWaitTimeMs) {
 
     while (!RingColorCheck(aMode, intakeOptical.get_hue())) {
         if (pros::millis() - startTime >= maxWaitTimeMs) {
-            break; // Exit the loop if max wait time is reached
+            return IntakeExit::TIMEOUT;
         }
         pros::delay(10);
     }
 
     RunIntake(IntakeSpeed::STOP);
+
+    return IntakeExit::RING_DETECTED;
 }
 
 
