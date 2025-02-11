@@ -62,8 +62,8 @@ void skills(){
 
   // drive towards goal and pick it up
   chassis.pid_drive_set(-38_in, DRIVE_SPEED, true);
-  chassis.pid_wait_until(-14_in);
-  chassis.pid_speed_max_set(30);
+  chassis.pid_wait_until(-18_in);
+  chassis.pid_speed_max_set(35);
   chassis.pid_wait_until(-29_in);
   CloseClamp();
   chassis.pid_wait();
@@ -86,7 +86,7 @@ void skills(){
   chassis.pid_wait_until(16_in);
   chassis.pid_speed_max_set(35);
   chassis.pid_wait();
-  chassis.pid_turn_set(268_deg, TURN_SPEED);
+  chassis.pid_turn_set(268_deg, 50);
   chassis.pid_wait();
 
   // Score wallstake
@@ -131,10 +131,19 @@ void skills(){
   chassis.pid_wait();
 
   //Intake next stack
+  RunIntake(IntakeSpeed::STOP);
+  chassis.pid_turn_set(90_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_drive_set(-21_in, 40, true);
+  chassis.pid_wait();
+  chassis.pid_drive_set(18_in, 50, true);
+  chassis.pid_wait();
   chassis.pid_turn_set(180_deg, TURN_SPEED);
   chassis.pid_wait();
   RunIntake(IntakeSpeed::SLOW);
-  chassis.pid_drive_set(70_in, DRIVE_SPEED, true);
+  chassis.pid_drive_set(-21_in, 40, true);
+  chassis.pid_wait();
+  chassis.pid_drive_set(90_in, DRIVE_SPEED, true);
   chassis.pid_wait_until(40_in);
   chassis.pid_speed_max_set(SLOW_DRIVE_SPEED);
   IntakeWait(AllianceMode::RED, 1500);
@@ -147,7 +156,7 @@ void skills(){
   chassis.pid_drive_set(-27_in, DRIVE_SPEED, true);
   chassis.pid_wait_until(-10_in);
   chassis.pid_speed_max_set(30);
-  chassis.pid_wait_until(-23_in);
+  chassis.pid_wait_until(-20_in);
   CloseClamp();
   pros::delay(300);
   RunIntake(IntakeSpeed::FAST);
@@ -166,9 +175,31 @@ void skills(){
   chassis.pid_wait();
   chassis.pid_drive_set(28_in, DRIVE_SPEED, true);
   chassis.pid_wait();
+  chassis.pid_drive_set(-6_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
   pros::delay(200);
 
-  // face corner, release goal
+  // Clear corner of rings and score goal
+  chassis.pid_turn_set(235_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_drive_set(17_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  DoinkerDown();
+  pros::delay(500);
+  chassis.pid_drive_set(-4_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  chassis.pid_turn_set(320_deg, TURN_SPEED);
+  chassis.pid_wait();
+  DoinkerUp();
+  pros::delay(400);
+  chassis.pid_turn_set(215_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_drive_set(20_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+  chassis.pid_drive_set(-15_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  /* face corner, release goal
   chassis.pid_turn_set(45_deg, TURN_SPEED);
   chassis.pid_wait();
   chassis.pid_drive_set(-6_in, DRIVE_SPEED, true);
@@ -178,7 +209,10 @@ void skills(){
   chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
   chassis.pid_wait();
 
-  RunIntake(IntakeSpeed::STOP);
+  */
+
+  //Intake 
+
 
 
   
