@@ -178,7 +178,7 @@ void skills(){
   chassis.pid_drive_set(-6_in, DRIVE_SPEED, true);
   chassis.pid_wait();
   pros::delay(200);
-
+  
   // Clear corner of rings and score goal
   chassis.pid_turn_set(235_deg, TURN_SPEED);
   chassis.pid_wait();
@@ -281,6 +281,46 @@ void skills(){
   chassis.pid_wait_until(-20_in);
   CloseClamp();
   chassis.pid_wait();*/
+}
+
+
+void RedMatchAuton(){
+
+  chassis.pid_drive_constants_set(17.4, 0.0, 109.00);  
+  // used for color sort!
+  SetAllianceMode(AllianceMode::RED);
+
+  // face goal
+  chassis.pid_turn_set(35_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  OpenClamp();
+
+  // grab onto goal
+  chassis.pid_drive_set(-54_in, DRIVE_SPEED);
+  //chassis.pid_wait_until(-48_in);
+  //chassis.pid_speed_max_set(40);
+  chassis.pid_wait_until(-50_in);
+  CloseClamp();
+  chassis.pid_wait();
+
+
+  // drive back
+  chassis.pid_drive_set(48_in, DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // check if goal is in clamp
+  /*if(!IsGoalClamped()){
+    // open clamp
+    // turn to face goal
+    // grab
+    // come back to same pos as before
+    // continue with the rest of the code, collect the same rings as intended
+  }*/
+
+
+
+
 }
 
 ///

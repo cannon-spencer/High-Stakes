@@ -3,6 +3,7 @@
 void default_constants();
 
 void skills();
+void RedMatchAuton();
 
 void drive_example();
 void turn_example();
