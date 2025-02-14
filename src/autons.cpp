@@ -365,20 +365,23 @@ void RedMatchAuton(){
   RunIntake(IntakeSpeed::STOP);
   pros::delay(300);
   chassis.pid_drive_set(30_in, DRIVE_SPEED);
-  chassis.pid_wait_until(20_in);
+  chassis.pid_wait_until(15_in);
   DoinkerDown();
-  chassis.pid_wait_until(30_in);
+  chassis.pid_wait_until(20_in);
   OpenClamp();
   chassis.pid_wait();
   chassis.pid_turn_set(280_deg, TURN_SPEED,ez::cw);
   chassis.pid_wait();
+  pros::delay(400);
 
   // score goal in corner
-  chassis.pid_turn_set(180_deg, TURN_SPEED,ez::cw);
+  chassis.pid_turn_set(176_deg, TURN_SPEED,ez::ccw);
   chassis.pid_wait();
-  chassis.pid_drive_set(-15_in, SLOW_DRIVE_SPEED);
-  chassis.pid_wait();
+  chassis.pid_drive_set(-24_in, 40);
+  chassis.pid_wait_until(-18_in);
   CloseClamp();
+  chassis.pid_wait();
+
 
 
 
