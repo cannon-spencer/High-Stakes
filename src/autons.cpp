@@ -51,6 +51,14 @@ void default_constants() {
 }
 
 
+void NewConstants(){
+  chassis.pid_drive_constants_set(16.4, 0.0, 109.00);
+  chassis.pid_turn_constants_set(2.9, 0, 28.75, 0);  
+  chassis.pid_heading_constants_set(10, 0.0, 21.0);
+
+}
+
+
 void skills(){
 
   // used for color sort!
@@ -286,27 +294,37 @@ void skills(){
 
 void RedMatchAuton(){
 
-  chassis.pid_drive_constants_set(17.4, 0.0, 109.00);  
+  //NewConstants();
   // used for color sort!
   SetAllianceMode(AllianceMode::RED);
 
   // face goal
-  chassis.pid_turn_set(35_deg, TURN_SPEED);
-  chassis.pid_wait();
+  //chassis.pid_turn_set(37_deg, TURN_SPEED);
+  //chassis.pid_wait();
 
   OpenClamp();
 
   // grab onto goal
-  chassis.pid_drive_set(-54_in, DRIVE_SPEED);
+  chassis.pid_drive_set(44_in, DRIVE_SPEED);
   //chassis.pid_wait_until(-48_in);
   //chassis.pid_speed_max_set(40);
-  chassis.pid_wait_until(-50_in);
-  CloseClamp();
+  chassis.pid_wait_until(38_in);
+  DoinkerDown();
   chassis.pid_wait();
 
 
   // drive back
-  chassis.pid_drive_set(48_in, DRIVE_SPEED);
+  chassis.pid_drive_set(-25_in, 80);
+  chassis.pid_wait_until(-20_in);
+  chassis.pid_speed_max_set(DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // clamp goal
+  DoinkerUp();
+  chassis.pid_turn_set(173_deg, TURN_SPEED);
+  chassis.pid_drive_set(-22_in, 80);
+  chassis.pid_wait_until(-14_in);
+  CloseClamp();
   chassis.pid_wait();
 
   // check if goal is in clamp
@@ -316,10 +334,24 @@ void RedMatchAuton(){
     // grab
     // come back to same pos as before
     // continue with the rest of the code, collect the same rings as intended
-  }*/
+  }
+*/
 
-
-
+  // turn to grab first stack
+  chassis.pid_turn_set(160_deg, TURN_SPEED);  
+  chassis.pid_drive_set(33_in, DRIVE_SPEED);
+  chassis.pid_wait_until(12_in);
+  RunIntake(IntakeSpeed::FAST);
+  chassis.pid_wait();
+  chassis.pid_turn_set(110_deg, TURN_SPEED);
+  chassis.pid_drive_set(18_in, DRIVE_SPEED);
+  chassis.pid_wait_until(12_in);
+  chassis.pid_speed_max_set(70);
+  chassis.pid_drive_set(-5_in, DRIVE_SPEED);
+ 
+  // turn to grab second stack
+  chassis.pid_turn_set(18_deg, TURN_SPEED);
+  chassis.pid_drive_set(32_in, 60);
 
 }
 
