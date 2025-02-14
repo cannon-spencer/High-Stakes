@@ -4,6 +4,9 @@
 // Enum for Alliance Modes
 AllianceMode intakeMode = AllianceMode::BLUE;
 
+// manual flag for ejecting out of the front
+bool ejectFront = false; 
+
 // Intake Constants
 const int INTAKE_SPEED = 127;
 const int F_INTAKE_SPEED  = 127;
@@ -78,6 +81,15 @@ bool RingColorCheck(AllianceMode aMode, double hue) {
     return false;
 }
 
+
+void SetRejectMode(EjectMode eMode){
+    if(eMode == EjectMode::FRONT)
+        ejectFront = true;
+    else
+        ejectFront = false;
+}
+
+
 void DisplayAllianceMode(){
     switch (intakeMode) {
         case AllianceMode::BLUE: master.print(0, 0, "ALLIANCE: BLUE"); break;
@@ -85,6 +97,7 @@ void DisplayAllianceMode(){
         case AllianceMode::OFF: master.print(0, 0, "ALLIANCE: OFF "); break;
     }
 }
+
 
 void CycleAllianceMode() {
     // Cycle to next mode
@@ -141,6 +154,9 @@ void IntakeController(){
         
         // Driver Control Task
         if(!pros::competition::is_autonomous()){
+            
+            // ensure rejecting reverts to auto mode after autonomous
+            SetRejectMode(EjectMode::AUTO);
 
             // run main intake
             if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
@@ -183,21 +199,23 @@ void IntakeController(){
             if (RingColorCheck(intakeMode, intakeOptical.get_hue())){
                 master.rumble(".");
                 
-                // throw ring off the top
-                if(!scoreMode){
-                    pros::delay(230);
-                    RunIntake(IntakeSpeed::STOP);
-                    pros::delay(150);
-                    RunIntake(IntakeSpeed::FAST);
-                } 
-                
-                // reverse out of the front 
-                else {
+                // reverse out of the front
+                // check for lady brown staging and manual set flag
+                if(scoreMode || ejectFront){
                     pros::delay(40);
                     RunIntake(IntakeSpeed::REVERSE);
                     pros::delay(425);
                     RunIntake(IntakeSpeed::FAST);
+                } 
+                
+                // throw ring off the top
+                else {
+                    pros::delay(230);
+                    RunIntake(IntakeSpeed::STOP);
+                    pros::delay(150);
+                    RunIntake(IntakeSpeed::FAST);
                 }
+
             }
         } else {
             // Check if intake should be running but hasn't moved for the delay time
