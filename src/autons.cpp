@@ -53,7 +53,7 @@ void default_constants() {
 
 void NewConstants(){
   chassis.pid_drive_constants_set(16.4, 0.0, 109.00);
-  chassis.pid_turn_constants_set(2.9, 0, 28.75, 0);  
+  chassis.pid_turn_constants_set(2.4, 0, 28.75, 0);  
   chassis.pid_heading_constants_set(10, 0.0, 21.0);
 
 }
@@ -292,26 +292,126 @@ void skills(){
 }
 
 
+
+
+
 void RedMatchAuton(){
 
   //NewConstants();
+
   // used for color sort!
   SetAllianceMode(AllianceMode::RED);
 
-  // face goal
-  //chassis.pid_turn_set(37_deg, TURN_SPEED);
-  //chassis.pid_wait();
+  // set rings to eject out of the front
+  SetRejectMode(EjectMode::FRONT);
 
+  // set inital angle offset
+  chassis.drive_angle_set(-19_deg);
+
+  // drive forward and doinker goal
   OpenClamp();
-
-  // grab onto goal
-  chassis.pid_drive_set(44_in, DRIVE_SPEED);
-  //chassis.pid_wait_until(-48_in);
-  //chassis.pid_speed_max_set(40);
+  chassis.pid_drive_set(42_in, DRIVE_SPEED);
   chassis.pid_wait_until(38_in);
   DoinkerDown();
   chassis.pid_wait();
 
+  // drive back with the goal
+  chassis.pid_drive_set(-41_in, DRIVE_SPEED);
+  chassis.pid_wait_until(-30_in);
+  DoinkerUp();
+  chassis.pid_wait();
+
+  // swing goal into corner
+  chassis.pid_turn_set(90_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  // drive back and clamp second goal
+  chassis.pid_drive_set(-26_in, SLOW_DRIVE_SPEED);
+  chassis.pid_wait_until(-21_in);
+  CloseClamp();
+  chassis.pid_wait();
+
+  // drive toward first stack
+  RunIntake(IntakeSpeed::FAST);
+  chassis.pid_drive_set(47_in, SLOW_DRIVE_SPEED);
+  chassis.pid_wait();
+  pros::delay(600);
+  RunIntake(IntakeSpeed::REVERSE);
+  
+  // face second stack and intake
+  chassis.pid_turn_set(0_deg, TURN_SPEED);
+  chassis.pid_wait();
+  RunIntake(IntakeSpeed::FAST);
+  chassis.pid_drive_set(33_in, 32);
+  chassis.pid_wait();
+  pros::delay(500);
+
+  // turn to face ring stack 3 and intake
+  chassis.pid_turn_set(55_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_drive_set(9_in, 32);
+  chassis.pid_wait();
+  chassis.pid_swing_set(ez::RIGHT_SWING, 0_deg, 90);
+  chassis.pid_wait();
+  chassis.pid_drive_set(2_in, 32);
+  chassis.pid_wait();
+  pros::delay(500);
+  
+  //Removes rings from corner
+  chassis.pid_drive_set(-20_in, DRIVE_SPEED);
+  chassis.pid_wait();
+  chassis.pid_turn_set(176_deg, TURN_SPEED,ez::cw);
+  chassis.pid_wait();
+  RunIntake(IntakeSpeed::STOP);
+  pros::delay(300);
+  chassis.pid_drive_set(30_in, DRIVE_SPEED);
+  chassis.pid_wait_until(20_in);
+  DoinkerDown();
+  chassis.pid_wait_until(30_in);
+  OpenClamp();
+  chassis.pid_wait();
+  chassis.pid_turn_set(280_deg, TURN_SPEED,ez::cw);
+  chassis.pid_wait();
+
+  // score goal in corner
+  chassis.pid_turn_set(180_deg, TURN_SPEED,ez::cw);
+  chassis.pid_wait();
+  chassis.pid_drive_set(-15_in, SLOW_DRIVE_SPEED);
+  chassis.pid_wait();
+  CloseClamp();
+
+
+
+
+  /*
+  chassis.pid_drive_set(-14_in, SLOW_DRIVE_SPEED);
+  chassis.pid_wait_until(-12_in);
+  CloseClamp();
+  chassis.pid_wait();
+
+  // face ring stack
+  chassis.pid_turn_set(110_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  // drive to pickup first ring
+  chassis.pid_drive_set(32_in, DRIVE_SPEED);
+  RunIntake(IntakeSpeed::FAST);
+  chassis.pid_wait_until(20_in);
+  chassis.pid_speed_max_set(SLOW_DRIVE_SPEED);
+  chassis.pid_wait();
+
+  // face second ring
+  chassis.pid_turn_set(0_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  // drive and pick up second ring stack (eject first ring)
+  chassis.pid_drive_set(35_in, DRIVE_SPEED);
+  chassis.pid_wait_until(10_in);
+  chassis.pid_speed_max_set(40);
+  chassis.pid_wait();
+
+
+/*
 
   // drive back
   chassis.pid_drive_set(-25_in, 80);
@@ -321,39 +421,36 @@ void RedMatchAuton(){
 
   // clamp goal
   DoinkerUp();
-  chassis.pid_turn_set(173_deg, TURN_SPEED);
-  chassis.pid_drive_set(-22_in, 80);
-  chassis.pid_wait_until(-14_in);
+  chassis.pid_turn_set(171_deg, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_drive_set(-18_in, SLOW_DRIVE_SPEED);
+  chassis.pid_wait_until(-12_in);
   CloseClamp();
   chassis.pid_wait();
 
-  // check if goal is in clamp
-  /*if(!IsGoalClamped()){
-    // open clamp
-    // turn to face goal
-    // grab
-    // come back to same pos as before
-    // continue with the rest of the code, collect the same rings as intended
-  }
-*/
-
   // turn to grab first stack
-  chassis.pid_turn_set(160_deg, TURN_SPEED);  
-  chassis.pid_drive_set(33_in, DRIVE_SPEED);
+  chassis.pid_turn_set(150_deg, TURN_SPEED);  
+  chassis.pid_wait();
+  chassis.pid_drive_set(49_in, DRIVE_SPEED);
   chassis.pid_wait_until(12_in);
   RunIntake(IntakeSpeed::FAST);
+  chassis.pid_wait_until(30_in);
+  chassis.pid_speed_max_set(SLOW_DRIVE_SPEED);
   chassis.pid_wait();
   chassis.pid_turn_set(110_deg, TURN_SPEED);
-  chassis.pid_drive_set(18_in, DRIVE_SPEED);
+  chassis.pid_wait();*/
+  /*chassis.pid_drive_set(18_in, DRIVE_SPEED);
   chassis.pid_wait_until(12_in);
   chassis.pid_speed_max_set(70);
   chassis.pid_drive_set(-5_in, DRIVE_SPEED);
  
   // turn to grab second stack
   chassis.pid_turn_set(18_deg, TURN_SPEED);
-  chassis.pid_drive_set(32_in, 60);
+  chassis.pid_drive_set(35_in, 50);
+*/
 
 }
+
 
 ///
 // Drive Example
