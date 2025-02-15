@@ -10,6 +10,7 @@
 const int DRIVE_SPEED = 110;
 const int SLOW_DRIVE_SPEED = 50;
 const int TURN_SPEED = 100;
+const int SLOW_TURN_SPEED = 55;
 const int SWING_SPEED = 110;
 
 ///
@@ -61,6 +62,7 @@ void NewConstants(){
 
 void skills(){
 
+  /*
   // used for color sort!
   SetAllianceMode(AllianceMode::RED);
 
@@ -71,11 +73,11 @@ void skills(){
   // drive towards goal and pick it up
   chassis.pid_drive_set(-38_in, DRIVE_SPEED, true);
   chassis.pid_wait_until(-18_in);
-  chassis.pid_speed_max_set(35);
+  chassis.pid_speed_max_set(30);
   chassis.pid_wait_until(-29_in);
   CloseClamp();
   chassis.pid_wait();
-  chassis.pid_drive_set(2_in, DRIVE_SPEED, true);
+  chassis.pid_drive_set(2_in, SLOW_DRIVE_SPEED, true);
   chassis.pid_wait();
   
   // collect first ring
@@ -205,7 +207,7 @@ void skills(){
   chassis.pid_drive_set(20_in, DRIVE_SPEED, true);
   chassis.pid_wait();
   chassis.pid_drive_set(-15_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
+  chassis.pid_wait(); */
 
   /* face corner, release goal
   chassis.pid_turn_set(45_deg, TURN_SPEED);
@@ -219,94 +221,175 @@ void skills(){
 
   */
 
-  //Intake 
 
+   // used for color sort!
+   SetAllianceMode(AllianceMode::RED);
 
-
-  
-
+   // face goal
+   chassis.pid_turn_set(27_deg, TURN_SPEED);
+   chassis.pid_wait();
  
-  //chassis.pid_drive_set(15_in, 65, true);
- // chassis.pid_wait();
+   // drive towards goal and pick it up
+   chassis.pid_drive_set(-38_in, DRIVE_SPEED, true);
+   chassis.pid_wait_until(-14_in);
+   chassis.pid_speed_max_set(30);
+   chassis.pid_wait_until(-29_in);
+   CloseClamp();
+   chassis.pid_wait();
+   chassis.pid_drive_set(2_in, DRIVE_SPEED, true);
+   chassis.pid_wait();
+   
+   // collect first ring
+   RunIntake(IntakeSpeed::FAST);
+   chassis.pid_turn_set(90_deg, TURN_SPEED);
+   chassis.pid_wait();
+   chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
+   chassis.pid_wait();
+ 
+   // Turn to angle towards 2nd ring
+   chassis.pid_turn_set(225_deg, TURN_SPEED);
+   chassis.pid_wait();
+   
+   // Intake second and third rings
+   chassis.pid_drive_set(33.5_in, DRIVE_SPEED, true);
+   chassis.pid_wait_until(16_in);
+   chassis.pid_speed_max_set(35);
+   chassis.pid_wait();
+   chassis.pid_turn_set(268_deg, TURN_SPEED);
+   chassis.pid_wait();
+ 
+   // Score wallstake
+   scoreMode = true;
+   AsyncLadyBrown(PRIMED_POSITION);
+   chassis.pid_drive_set(11_in, 25, true);
+   chassis.pid_wait();
+   pros::delay(600);
+   chassis.pid_drive_set(5_in, 30, true);
+   chassis.pid_wait();
+   pros::delay(1500);
+   RunIntake(IntakeSpeed::STOP);
+   AsyncLadyBrown(WALLSTAKE_POSITION);
+   scoreMode = false;
+   pros::delay(400);
+ 
+   //Drive back and intake next ring
+   chassis.pid_drive_set(-10_in, DRIVE_SPEED, true);
+   chassis.pid_wait();
+   //AsyncLadyBrown(BASE_POSITION);
+   chassis.pid_turn_set(0_deg, TURN_SPEED);
+   chassis.pid_wait();
+   RunIntake(IntakeSpeed::FAST);
+   chassis.pid_drive_set(50_in, DRIVE_SPEED, true);
+   chassis.pid_wait_until(30_in);
+   chassis.pid_speed_max_set(35);
+   chassis.pid_wait();
+   chassis.pid_drive_set(-3_in, DRIVE_SPEED, true);
+   chassis.pid_wait();
+ 
+   //Intake corner and score goal
+   chassis.pid_turn_set(315_deg, SLOW_TURN_SPEED);
+   chassis.pid_wait();
+   chassis.pid_drive_set(23_in, DRIVE_SPEED, true);
+   chassis.pid_wait();
+   chassis.pid_drive_set(-12_in, DRIVE_SPEED, true);
+   chassis.pid_wait();
+   chassis.pid_turn_set(135_deg, TURN_SPEED);
+   chassis.pid_wait();
+   chassis.pid_drive_set(-14_in, DRIVE_SPEED, true);
+   chassis.pid_wait();
+   OpenClamp();
+   chassis.pid_drive_set(18_in, DRIVE_SPEED, true);
+   chassis.pid_wait();
+ 
+   //Intake next stack
+   chassis.pid_turn_set(180_deg, TURN_SPEED);
+   chassis.pid_wait();
+   RunIntake(IntakeSpeed::SLOW);
+   chassis.pid_drive_set(69_in, SLOW_DRIVE_SPEED, true);
+   IntakeWait(AllianceMode::RED, 3000);
+   chassis.pid_wait();
+   RunIntake(IntakeSpeed::STOP);
+ 
+   // Turn and clamp goal
+   chassis.pid_turn_set(270_deg, TURN_SPEED);
+   chassis.pid_wait();
+   chassis.pid_drive_set(-26_in, 40, true);
+   chassis.pid_wait_until(-23_in);
+   CloseClamp();
+   pros::delay(300);
+   RunIntake(IntakeSpeed::FAST);
+ 
+   // Face ring stack and collect ring
+   chassis.pid_turn_set(180_deg, TURN_SPEED);
+   chassis.pid_wait();
+   chassis.pid_drive_set(25_in, DRIVE_SPEED, true);
+   chassis.pid_wait();
+   pros::delay(200);
+   //chassis.pid_drive_set(-2_in, DRIVE_SPEED, true);
+   //chassis.pid_wait();
+ 
+   // Grab the second ring stack
+   chassis.pid_turn_set(270_deg, TURN_SPEED);
+   chassis.pid_wait();
+   chassis.pid_drive_set(28_in, DRIVE_SPEED, true);
+   chassis.pid_wait();
+   pros::delay(1500);
+ 
+   // face corner, release goal
+   RunIntake(IntakeSpeed::STOP);
+   chassis.pid_turn_set(45_deg, TURN_SPEED);
+   chassis.pid_wait();
+   chassis.pid_drive_set(-13_in, DRIVE_SPEED, true);
+   chassis.pid_wait_until(-10_in);
+   OpenClamp();
+   chassis.pid_wait();
+   pros::delay(500);
 
-  // face wallstake
- /* chassis.pid_turn_set(270_deg, 50);
-  chassis.pid_wait();
-  AsyncLadyBrown(PRIMED_POSITION);
+   chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
+   chassis.pid_wait();
 
-  // drive towards wallstake
-  chassis.pid_drive_set(10_in, SLOW_DRIVE_SPEED, true);
-  chassis.pid_wait();
-  pros::delay(700);
-  chassis.pid_drive_set(-6_in, SLOW_DRIVE_SPEED, true);
-  chassis.pid_wait();
-  pros::delay(400);
-  chassis.pid_drive_set(7_in, SLOW_DRIVE_SPEED, true);
-  chassis.pid_wait();
+   // ram back into corner for good measure
+   chassis.pid_drive_set(-10_in, DRIVE_SPEED, true);
+   chassis.pid_wait();
+   chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
+   chassis.pid_wait();
+   RunIntake(IntakeSpeed::STOP); 
 
-  // score wallstake
-  WaitLadyBrown(WALLSTAKE_POSITION);
 
-  chassis.pid_drive_set(-10_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-  chassis.pid_turn_set(45_deg, TURN_SPEED);
-  chassis.pid_wait();
-  WaitLadyBrown(BASE_POSITION);
-  /*chassis.pid_drive_set(43_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-  chassis.pid_wait_until(30_in);
-  chassis.pid_speed_max_set(60);
-  chassis.pid_drive_set(-4_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-  chassis.pid_turn_set(310_deg, TURN_SPEED);
-  chassis.pid_wait();
-  chassis.pid_drive_set(49_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-  chassis.pid_wait_until(40_in);
-  chassis.pid_speed_max_set(50);
-  chassis.pid_drive_set(-6_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-  chassis.pid_turn_set(135_deg, TURN_SPEED);
-  chassis.pid_wait();
-  chassis.pid_drive_set(-12_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-  OpenClamp();
-  chassis.pid_drive_set(14_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
+   // attempt hang
+   /*chassis.pid_turn_set(225_deg, TURN_SPEED);
+   chassis.pid_wait();
+   AsyncLadyBrown(WALLSTAKE_POSITION);
+   chassis.pid_drive_set(-70_in, SLOW_DRIVE_SPEED, true);
+   chassis.pid_wait_until(-40_in);
+   chassis.pid_speed_max_set(25);
+   chassis.pid_wait();*/
 
-  chassis.pid_turn_set(180, TURN_SPEED);
-  chassis.pid_wait();
-  chassis.pid_drive_set(75_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-  chassis.pid_wait_until(60_in);
-  chassis.pid_speed_max_set(40);
-  RunIntake(IntakeSpeed::STOP);
-  chassis.pid_turn_set(270, TURN_SPEED);
-  chassis.pid_wait();
-  chassis.pid_drive_set(-28_in, DRIVE_SPEED, true);
-  chassis.pid_wait_until(-10_in);
-  chassis.pid_speed_max_set(30);
-  chassis.pid_wait_until(-20_in);
-  CloseClamp();
-  chassis.pid_wait();*/
 }
 
 
+void RedMatchAuton() {
+  SetAllianceMode(AllianceMode::RED);
+  MatchAuton();
+}
+
+void BlueMatchAuton() {
+  SetAllianceMode(AllianceMode::BLUE);
+  MatchAuton();
+}
 
 
+void MatchAuton(){
 
-void RedMatchAuton(){
-
-  //NewConstants();
+  // Flip angles dynamically
+  //int baseAngleOffset = chassis.odom_theta_direction_get() ? -19 : 360 - (-19);
+  chassis.drive_angle_set(-19);
 
   // used for color sort!
   SetAllianceMode(AllianceMode::RED);
 
   // set rings to eject out of the front
   SetRejectMode(EjectMode::FRONT);
-
-  // set inital angle offset
-  chassis.drive_angle_set(-19_deg);
 
   // drive forward and doinker goal
   OpenClamp();

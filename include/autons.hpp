@@ -4,6 +4,8 @@ void default_constants();
 
 void skills();
 void RedMatchAuton();
+void BlueMatchAuton();
+void MatchAuton();
 
 void drive_example();
 void turn_example();

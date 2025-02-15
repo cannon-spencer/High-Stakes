@@ -44,8 +44,9 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Red Match Auton", RedMatchAuton},
       {"Skills\n\nRight side setup", skills},
+      {"Red Match Auton\n\nPositive Setup", RedMatchAuton},
+      {"Blue Match Auton\n\nNegative Setup", BlueMatchAuton},
       {"Drive\n\nDrive forward and come back", drive_example},
       {"Turn\n\nTurn 3 times.", turn_example},
       {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
@@ -235,6 +236,8 @@ void opcontrol() {
   const int RUMBLE_INTERVAL = 1000;                           // 1 second interval
   int matchStartTime = pros::millis();                        // Store the start time
   int lastRumbleTime = 0;                                     // Track last rumble event
+
+  scoreMode = false;
 
   while (true) {
     // Gives you some extras to make EZ-Template ezier
