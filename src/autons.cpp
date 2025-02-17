@@ -224,6 +224,7 @@ void skills(){
 
    // used for color sort!
    SetAllianceMode(AllianceMode::RED);
+   IntakeDown();
 
    // face goal
    chassis.pid_turn_set(27_deg, TURN_SPEED);
@@ -261,10 +262,10 @@ void skills(){
    // Score wallstake
    scoreMode = true;
    AsyncLadyBrown(PRIMED_POSITION);
-   chassis.pid_drive_set(11_in, 25, true);
+   chassis.pid_drive_set(11_in, 35, true);
    chassis.pid_wait();
    pros::delay(600);
-   chassis.pid_drive_set(5_in, 30, true);
+   chassis.pid_drive_set(5_in, 35, true);
    chassis.pid_wait();
    pros::delay(1500);
    RunIntake(IntakeSpeed::STOP);
@@ -369,11 +370,13 @@ void skills(){
 
 
 void RedMatchAuton() {
+  IntakeDown();
   SetAllianceMode(AllianceMode::RED);
   MatchAuton();
 }
 
 void BlueMatchAuton() {
+  IntakeDown();
   SetAllianceMode(AllianceMode::BLUE);
   MatchAuton();
 }
@@ -386,7 +389,7 @@ void MatchAuton(){
   chassis.drive_angle_set(-19);
 
   // used for color sort!
-  SetAllianceMode(AllianceMode::RED);
+  //SetAllianceMode(AllianceMode::RED);
 
   // set rings to eject out of the front
   SetRejectMode(EjectMode::FRONT);
@@ -399,8 +402,14 @@ void MatchAuton(){
   chassis.pid_wait();
 
   // drive back with the goal
-  chassis.pid_drive_set(-41_in, DRIVE_SPEED);
+  chassis.pid_drive_set(-40_in, DRIVE_SPEED);
   chassis.pid_wait_until(-30_in);
+  
+  if (chassis.interfered) {
+    tug(10);
+    return;
+  }
+
   DoinkerUp();
   chassis.pid_wait();
 
@@ -416,7 +425,7 @@ void MatchAuton(){
 
   // drive toward first stack
   RunIntake(IntakeSpeed::FAST);
-  chassis.pid_drive_set(47_in, SLOW_DRIVE_SPEED);
+  chassis.pid_drive_set(48_in, SLOW_DRIVE_SPEED);
   chassis.pid_wait();
   pros::delay(600);
   RunIntake(IntakeSpeed::REVERSE);
@@ -428,12 +437,15 @@ void MatchAuton(){
   chassis.pid_drive_set(33_in, 32);
   chassis.pid_wait();
   pros::delay(500);
+  RunIntake(IntakeSpeed::STOP); //added
 
   // turn to face ring stack 3 and intake
-  chassis.pid_turn_set(55_deg, TURN_SPEED);
+  /*chassis.pid_turn_set(55_deg, TURN_SPEED);
   chassis.pid_wait();
   chassis.pid_drive_set(9_in, 32);
   chassis.pid_wait();
+  
+
   chassis.pid_swing_set(ez::RIGHT_SWING, 0_deg, 90);
   chassis.pid_wait();
   chassis.pid_drive_set(2_in, 32);
@@ -463,7 +475,7 @@ void MatchAuton(){
   chassis.pid_drive_set(-24_in, 40);
   chassis.pid_wait_until(-18_in);
   CloseClamp();
-  chassis.pid_wait();
+  chassis.pid_wait(); */
 
 
 

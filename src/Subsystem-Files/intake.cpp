@@ -2,13 +2,13 @@
 #include "subsystems.hpp"
 
 // Enum for Alliance Modes
-AllianceMode intakeMode = AllianceMode::BLUE;
+AllianceMode intakeMode = AllianceMode::OFF;
 
 // manual flag for ejecting out of the front
 bool ejectFront = false; 
 
 // Intake Constants
-const int INTAKE_SPEED = 127;
+const int INTAKE_SPEED = 100;
 const int F_INTAKE_SPEED  = 127;
 
 // Timestamp tracking when intake was last commanded to run
