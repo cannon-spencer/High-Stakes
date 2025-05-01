@@ -16,8 +16,8 @@ pros::Optical intakeOptical(19);
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {5, -13, 2, -4},  // Left Chassis Ports (negative port will reverse it!)
-    {11, -1, -14, 12},  // Right Chassis Ports (negative port will reverse it!)
+    {-5, -13, -4},  // Left Chassis Ports (negative port will reverse it!)
+    {11, 12, 14},  // Right Chassis Ports (negative port will reverse it!)
 
     15,      // IMU Port
     3.25,   // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
