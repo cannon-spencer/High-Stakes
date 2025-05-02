@@ -1,5 +1,7 @@
 #include "main.h"
 #include "subsystems.hpp"
+#include <cstdint>
+
 
 const int BASE_POSITION = 9000;
 const int PRIMED_POSITION = 10800;
@@ -7,12 +9,15 @@ const int WALLSTAKE_POSITION = 22700;
 
 bool scoreMode = false;
 
-ez::PID liftPID{0.05, 0, 0.1, 0, "Lift"};
+ez::PID liftPID{0.043, 0.0, 0.1, 0, "Lift"};
 
 void LiftController(){
 
     // pre-set base target position
     liftPID.target_set(BASE_POSITION);
+
+    // block this task until signalled to begin
+    while(pros::Task::notify_take(true, TIMEOUT_MAX));
 
     while(1){
 

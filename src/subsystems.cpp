@@ -19,10 +19,10 @@ ez::Drive chassis(
     {-5, -13, -4},  // Left Chassis Ports (negative port will reverse it!)
     {11, 12, 14},  // Right Chassis Ports (negative port will reverse it!)
 
-    15,      // IMU Port
-    3.25,   // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
-    600);  // Wheel RPM = cartridge * (motor gear / wheel gear)
+    15,    // IMU Port
+    3.25,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
+    459);  // Wheel RPM = cartridge * (motor gear / wheel gear)
 
 //  - you should get positive values on the encoders going FORWARD and RIGHT
-ez::tracking_wheel horiz_tracker(17, 2, -4.18);  // This tracking wheel is perpendicular to the drive wheels
-ez::tracking_wheel vert_tracker(15, 2, -0.54);   // This tracking wheel is parallel to the drive wheels
+//ez::tracking_wheel horiz_tracker(17, 2, -4.18);  // This tracking wheel is perpendicular to the drive wheels
+//ez::tracking_wheel vert_tracker(15, 2, -0.54);   // This tracking wheel is parallel to the drive wheels

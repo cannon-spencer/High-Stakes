@@ -54,7 +54,6 @@ void initialize() {
       {"Swing Turn\n\nSwing in an 'S' curve", swing_example},
       {"Motion Chaining\n\nDrive forward, turn, and come back, but blend everything together :D", motion_chaining},
       {"Combine all 3 movements", combining_movements},
-      {"Interference\n\nAfter driving forward, robot performs differently if interfered or not", interfered_example},
       {"Simple Odom\n\nThis is the same as the drive example, but it uses odom instead!", odom_drive_example},
       {"Pure Pursuit\n\nGo to (0, 30) and pass through (6, 10) on the way.  Come back to (0, 0)", odom_pure_pursuit_example},
       {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
@@ -116,6 +115,7 @@ void autonomous() {
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);     // Set motors to hold.  This helps autonomous consistency
   IntakeTask.resume();
   LiftTask.resume();
+  LiftTask.notify();
   ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
 }
 
@@ -229,6 +229,7 @@ void opcontrol() {
   // ensure tasks are resumed before match
   IntakeTask.resume();
   LiftTask.resume();
+  LiftTask.notify();
 
   const int DRIVER_CONTROL_TIME = 90000;                      // 90 seconds
   const int WARNING_START_TIME = DRIVER_CONTROL_TIME - 35000; // 35 seconds

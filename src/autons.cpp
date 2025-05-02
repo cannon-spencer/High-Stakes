@@ -26,11 +26,11 @@ void default_constants() {
   chassis.pid_odom_boomerang_constants_set(5.8, 0.0, 32.5);  // Angular control for boomerang motions
 
   // Exit conditions
-  chassis.pid_turn_exit_condition_set(110_ms, 2_deg, 350_ms, 7_deg, 500_ms, 500_ms);
-  chassis.pid_swing_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
+  chassis.pid_turn_exit_condition_set(110_ms, 2_deg, 350_ms, 5_deg, 500_ms, 500_ms);
+  chassis.pid_swing_exit_condition_set(90_ms, 3_deg, 250_ms, 5_deg, 500_ms, 500_ms);
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 250_ms, 3_in, 500_ms, 500_ms);
-  chassis.pid_odom_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 750_ms);
-  chassis.pid_odom_drive_exit_condition_set(90_ms, 1_in, 250_ms, 3_in, 500_ms, 750_ms);
+  chassis.pid_odom_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 5_deg, 500_ms, 750_ms);
+  chassis.pid_odom_drive_exit_condition_set(90_ms, 0.5_in, 250_ms, 3_in, 500_ms, 750_ms);
   chassis.pid_turn_chain_constant_set(3_deg);
   chassis.pid_swing_chain_constant_set(5_deg);
   chassis.pid_drive_chain_constant_set(3_in);
@@ -49,14 +49,6 @@ void default_constants() {
   chassis.odom_boomerang_dlead_set(0.625);     // This handles how aggressive the end of boomerang motions are
 
   chassis.pid_angle_behavior_set(ez::shortest);  // Changes the default behavior for turning, this defaults it to the shortest path there
-}
-
-
-void NewConstants(){
-  chassis.pid_drive_constants_set(16.4, 0.0, 109.00);
-  chassis.pid_turn_constants_set(2.4, 0, 28.75, 0);  
-  chassis.pid_heading_constants_set(10, 0.0, 21.0);
-
 }
 
 
@@ -406,8 +398,8 @@ void MatchAuton(){
   chassis.pid_wait_until(-30_in);
   
   if (chassis.interfered) {
-    tug(10);
-    return;
+      // while(true)
+      // drive backwards full speed
   }
 
   DoinkerUp();
@@ -729,21 +721,6 @@ void tug(int attempts) {
   }
 }
 
-// If there is no interference, the robot will drive forward and turn 90 degrees.
-// If interfered, the robot will drive forward and then attempt to drive backward.
-void interfered_example() {
-  chassis.pid_drive_set(24_in, DRIVE_SPEED, true);
-  chassis.pid_wait();
-
-  if (chassis.interfered) {
-    tug(3);
-    return;
-  }
-
-  chassis.pid_turn_set(90_deg, TURN_SPEED);
-  chassis.pid_wait();
-}
-
 ///
 // Odom Drive PID
 ///
@@ -880,7 +857,3 @@ void measure_offsets() {
   if (chassis.odom_tracker_back != nullptr) chassis.odom_tracker_back->distance_to_center_set(b_offset);
   if (chassis.odom_tracker_front != nullptr) chassis.odom_tracker_front->distance_to_center_set(f_offset);
 }
-
-// . . .
-// Make your own autonomous functions here!
-// . . .
