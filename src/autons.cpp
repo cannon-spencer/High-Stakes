@@ -20,13 +20,13 @@ void default_constants() {
   // P, I, D, and Start I
   chassis.pid_drive_constants_set(19.4, 0.0, 109.00);         // Fwd/rev constants, used for odom and non odom motions
   chassis.pid_heading_constants_set(10.7, 0.0, 21.0);        // Holds the robot straight while going forward without odom
-  chassis.pid_turn_constants_set(3.15, 0, 28.75, 0);     // Turn in place constants
+  chassis.pid_turn_constants_set(3.3, 0, 28.75, 0);     // Turn in place constants
   chassis.pid_swing_constants_set(6.0, 0.0, 65.0);           // Swing constants
   chassis.pid_odom_angular_constants_set(6.5, 0.0, 52.5);    // Angular control for odom motions
   chassis.pid_odom_boomerang_constants_set(5.8, 0.0, 32.5);  // Angular control for boomerang motions
 
   // Exit conditions
-  chassis.pid_turn_exit_condition_set(110_ms, 2_deg, 350_ms, 5_deg, 500_ms, 500_ms);
+  chassis.pid_turn_exit_condition_set(200_ms, 1.5_deg, 350_ms, 5_deg, 500_ms, 500_ms);
   chassis.pid_swing_exit_condition_set(90_ms, 3_deg, 250_ms, 5_deg, 500_ms, 500_ms);
   chassis.pid_drive_exit_condition_set(90_ms, 1_in, 250_ms, 3_in, 500_ms, 500_ms);
   chassis.pid_odom_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 5_deg, 500_ms, 750_ms);
@@ -378,17 +378,18 @@ void MatchAuton(){
 
   // Flip angles dynamically
   //int baseAngleOffset = chassis.odom_theta_direction_get() ? -19 : 360 - (-19);
-  chassis.drive_angle_set(-19);
+  //chassis.drive_angle_set(-19);
 
-  // used for color sort!
-  //SetAllianceMode(AllianceMode::RED);
+  // turn to face goal
+  chassis.pid_turn_set(-23_deg, 120);
+  chassis.pid_wait();
 
   // set rings to eject out of the front
   SetRejectMode(EjectMode::FRONT);
 
   // drive forward and doinker goal
   OpenClamp();
-  chassis.pid_drive_set(42_in, DRIVE_SPEED);
+  chassis.pid_drive_set(44_in, DRIVE_SPEED);
   chassis.pid_wait_until(38_in);
   DoinkerDown();
   chassis.pid_wait();
@@ -419,25 +420,25 @@ void MatchAuton(){
   RunIntake(IntakeSpeed::FAST);
   chassis.pid_drive_set(48_in, SLOW_DRIVE_SPEED);
   chassis.pid_wait();
-  pros::delay(600);
+  pros::delay(400);
   RunIntake(IntakeSpeed::REVERSE);
+  pros::delay(800);
   
   // face second stack and intake
   chassis.pid_turn_set(0_deg, TURN_SPEED);
   chassis.pid_wait();
   RunIntake(IntakeSpeed::FAST);
-  chassis.pid_drive_set(33_in, 32);
+  chassis.pid_drive_set(30.5_in, 30);
   chassis.pid_wait();
   pros::delay(500);
-  RunIntake(IntakeSpeed::STOP); //added
 
   // turn to face ring stack 3 and intake
-  /*chassis.pid_turn_set(55_deg, TURN_SPEED);
+  chassis.pid_turn_set(55_deg, TURN_SPEED);
   chassis.pid_wait();
   chassis.pid_drive_set(9_in, 32);
   chassis.pid_wait();
   
-
+  // swing towards ring on the line
   chassis.pid_swing_set(ez::RIGHT_SWING, 0_deg, 90);
   chassis.pid_wait();
   chassis.pid_drive_set(2_in, 32);
@@ -447,97 +448,29 @@ void MatchAuton(){
   //Removes rings from corner
   chassis.pid_drive_set(-20_in, DRIVE_SPEED);
   chassis.pid_wait();
-  chassis.pid_turn_set(176_deg, TURN_SPEED,ez::cw);
+  RunIntake(IntakeSpeed::STOP);
+  chassis.pid_turn_set(172_deg, TURN_SPEED,ez::cw);
   chassis.pid_wait();
   RunIntake(IntakeSpeed::STOP);
   pros::delay(300);
   chassis.pid_drive_set(30_in, DRIVE_SPEED);
+  chassis.pid_wait_until(10_in);
+  OpenClamp();
   chassis.pid_wait_until(15_in);
   DoinkerDown();
-  chassis.pid_wait_until(20_in);
-  OpenClamp();
   chassis.pid_wait();
   chassis.pid_turn_set(280_deg, TURN_SPEED,ez::cw);
   chassis.pid_wait();
   pros::delay(400);
-
-  // score goal in corner
-  chassis.pid_turn_set(176_deg, TURN_SPEED,ez::ccw);
-  chassis.pid_wait();
-  chassis.pid_drive_set(-24_in, 40);
-  chassis.pid_wait_until(-18_in);
-  CloseClamp();
-  chassis.pid_wait(); */
-
-
-
-
-
-  /*
-  chassis.pid_drive_set(-14_in, SLOW_DRIVE_SPEED);
-  chassis.pid_wait_until(-12_in);
-  CloseClamp();
-  chassis.pid_wait();
-
-  // face ring stack
-  chassis.pid_turn_set(110_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  // drive to pickup first ring
-  chassis.pid_drive_set(32_in, DRIVE_SPEED);
-  RunIntake(IntakeSpeed::FAST);
-  chassis.pid_wait_until(20_in);
-  chassis.pid_speed_max_set(SLOW_DRIVE_SPEED);
-  chassis.pid_wait();
-
-  // face second ring
-  chassis.pid_turn_set(0_deg, TURN_SPEED);
-  chassis.pid_wait();
-
-  // drive and pick up second ring stack (eject first ring)
-  chassis.pid_drive_set(35_in, DRIVE_SPEED);
-  chassis.pid_wait_until(10_in);
-  chassis.pid_speed_max_set(40);
-  chassis.pid_wait();
-
-
-/*
-
-  // drive back
-  chassis.pid_drive_set(-25_in, 80);
-  chassis.pid_wait_until(-20_in);
-  chassis.pid_speed_max_set(DRIVE_SPEED);
-  chassis.pid_wait();
-
-  // clamp goal
   DoinkerUp();
-  chassis.pid_turn_set(171_deg, TURN_SPEED);
+
+  // regrab goal we dropped to clear corner
+  chassis.pid_turn_set(172_deg, TURN_SPEED,ez::ccw);
   chassis.pid_wait();
-  chassis.pid_drive_set(-18_in, SLOW_DRIVE_SPEED);
-  chassis.pid_wait_until(-12_in);
+  chassis.pid_drive_set(-30_in, 40);
+  chassis.pid_wait_until(-25_in);
   CloseClamp();
   chassis.pid_wait();
-
-  // turn to grab first stack
-  chassis.pid_turn_set(150_deg, TURN_SPEED);  
-  chassis.pid_wait();
-  chassis.pid_drive_set(49_in, DRIVE_SPEED);
-  chassis.pid_wait_until(12_in);
-  RunIntake(IntakeSpeed::FAST);
-  chassis.pid_wait_until(30_in);
-  chassis.pid_speed_max_set(SLOW_DRIVE_SPEED);
-  chassis.pid_wait();
-  chassis.pid_turn_set(110_deg, TURN_SPEED);
-  chassis.pid_wait();*/
-  /*chassis.pid_drive_set(18_in, DRIVE_SPEED);
-  chassis.pid_wait_until(12_in);
-  chassis.pid_speed_max_set(70);
-  chassis.pid_drive_set(-5_in, DRIVE_SPEED);
- 
-  // turn to grab second stack
-  chassis.pid_turn_set(18_deg, TURN_SPEED);
-  chassis.pid_drive_set(35_in, 50);
-*/
 
 }
 

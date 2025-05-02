@@ -24,5 +24,5 @@ ez::Drive chassis(
     459);  // Wheel RPM = cartridge * (motor gear / wheel gear)
 
 //  - you should get positive values on the encoders going FORWARD and RIGHT
-//ez::tracking_wheel horiz_tracker(17, 2, -4.18);  // This tracking wheel is perpendicular to the drive wheels
-//ez::tracking_wheel vert_tracker(15, 2, -0.54);   // This tracking wheel is parallel to the drive wheels
+ez::tracking_wheel horiz_tracker(17, 2, -4.18);  // This tracking wheel is perpendicular to the drive wheels
+ez::tracking_wheel vert_tracker(15, 2, -0.54);   // This tracking wheel is parallel to the drive wheels
