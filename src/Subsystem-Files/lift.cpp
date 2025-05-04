@@ -5,7 +5,7 @@
 
 const int BASE_POSITION = 9000;
 const int PRIMED_POSITION = 10800;
-const int WALLSTAKE_POSITION = 22700;
+const int WALLSTAKE_POSITION = 23500; // old saved 22700
 
 bool scoreMode = false;
 

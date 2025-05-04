@@ -9,6 +9,7 @@ pros::Rotation liftRotation(7);
 pros::ADIDigitalOut intakePiston('H');
 pros::ADIDigitalOut doinkerPiston('F');
 pros::ADIDigitalOut clampPiston('E');
+pros::adi::DigitalIn selectButton('D');
 
 pros::Optical clampOptical(3);
 pros::Optical intakeOptical(19);

@@ -8,6 +8,7 @@
 #include "Subsystem-Files/drive.hpp"
 #include "Subsystem-Files/intake.hpp"
 #include "Subsystem-Files/lift.hpp"
+#include "Subsystem-Files/comp_timer.hpp"
 
 // EZ Constructors
 extern Drive chassis;
@@ -25,7 +26,11 @@ extern pros::ADIDigitalOut intakePiston;
 extern pros::ADIDigitalOut doinkerPiston;
 extern pros::ADIDigitalOut clampPiston;
 
+// Button
+extern pros::adi::DigitalIn selectButton;
+
 // Sensors
 extern pros::Rotation liftRotation;
 extern pros::Optical clampOptical;
 extern pros::Optical intakeOptical;
+
