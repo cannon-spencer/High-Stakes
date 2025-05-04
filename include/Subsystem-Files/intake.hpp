@@ -4,6 +4,7 @@ enum class AllianceMode { BLUE, RED, OFF };
 
 void SetIntake(int frontIntake, int mainIntake);
 void RunIntake();
+void oneIntake();
 void StopIntake();
 void ReverseIntake();
 void UnhookIntake();

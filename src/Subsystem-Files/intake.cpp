@@ -2,7 +2,7 @@
 #include "subsystems.hpp"
 
 // Enum for Alliance Modes
-AllianceMode intakeMode = AllianceMode::RED;
+AllianceMode intakeMode = AllianceMode::BLUE;
 
 // Intake Constants
 const int INTAKE_SPEED = 127;
@@ -33,6 +33,8 @@ void SetIntake(int f_intake, int m_intake){
 }
 
 void RunIntake(){ SetIntake(F_INTAKE_SPEED, INTAKE_SPEED); }
+
+void oneIntake(){ SetIntake(-F_INTAKE_SPEED, INTAKE_SPEED); }
 
 void StopIntake(){ SetIntake(0, 0); }
 
@@ -153,9 +155,9 @@ void IntakeController(){
                 IntakeDown();
 
             // Manual Allianace Color Swap -- almost never needed
-            //if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
-                //CycleAllianceMode();
-            //}
+            if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)) {
+                CycleAllianceMode();
+            }
 
         }
         
@@ -182,9 +184,11 @@ void IntakeController(){
                 (pros::millis() - lastRunningTime) > JAM_DETECTION_DELAY && 
                 (pros::millis() - intakeStartTime) > INTAKE_SPINUP_TIME) {
                 
-                ReverseIntake();
-                pros::delay(150);
-                RunIntake();
+                if (!scoreMode){
+                    ReverseIntake();
+                    pros::delay(150);
+                    RunIntake();
+                }
             }
         }
 

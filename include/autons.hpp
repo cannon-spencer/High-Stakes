@@ -4,7 +4,13 @@ void default_constants();
 
 void worlds_qual();
 
-void quals();
+void safe_blue();
+
+void rush_blue();
+
+void safe_red();
+
+void rush_red();
 
 void drive_example();
 void turn_example();

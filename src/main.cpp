@@ -21,11 +21,11 @@ void initialize() {
 
   // Look at your horizontal tracking wheel and decide if it's in front of the midline of your robot or behind it
   //  - change `back` to `front` if the tracking wheel is in front of the midline
-  chassis.odom_tracker_back_set(&horiz_tracker);
+  //chassis.odom_tracker_back_set(&horiz_tracker);
   
   // Look at your vertical tracking wheel and decide if it's to the left or right of the center of the robot
   //  - change `left` to `right` if the tracking wheel is to the right of the centerline
-  chassis.odom_tracker_left_set(&vert_tracker);
+  //chassis.odom_tracker_left_set(&vert_tracker);
 
   // Configure your chassis controls
   chassis.opcontrol_curve_buttons_toggle(false);   // Enables modifying the controller curve with buttons on the joysticks
@@ -41,7 +41,12 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Drive\n\nDrive forward and come back", drive_example},
+      {"Rush Blue Positive\n\nGet 3 Rings, Goal, and Touch bar", rush_blue},
+      {"Rush Red Negative\n\nGet 3 Rings, Goal, and Touch bar", rush_red},
+      {"Blue Positive\n\nGet 3 Rings, Goal, and Touch bar", safe_blue},
+      {"Red Negative\n\nGet 3 Rings, Goal and Touch bar", safe_red},
+      {"Skills\n\nQual for Worlds", worlds_qual},
+      /*{"Drive\n\nDrive forward and come back", drive_example},
       {"Turn\n\nTurn 3 times.", turn_example},
       {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
       {"Drive and Turn\n\nSlow down during drive", wait_until_change_speed},
@@ -54,7 +59,7 @@ void initialize() {
       {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
       {"Boomerang\n\nGo to (0, 24, 45) then come back to (0, 0, 0)", odom_boomerang_example},
       {"Boomerang Pure Pursuit\n\nGo to (0, 24, 45) on the way to (24, 24) then come back to (0, 0, 0)", odom_boomerang_injected_pure_pursuit_example},
-      {"Measure Offsets\n\nThis will turn the robot a bunch of times and calculate your offsets for your tracking wheels.", measure_offsets},
+      {"Measure Offsets\n\nThis will turn the robot a bunch of times and calculate your offsets for your tracking wheels.", measure_offsets},*/
   });
 
   // Initialize chassis and auton selector
@@ -107,8 +112,7 @@ void autonomous() {
   chassis.drive_brake_set(MOTOR_BRAKE_HOLD);     // Set motors to hold.  This helps autonomous consistency
   IntakeTask.resume();
   LiftTask.resume();
-  worlds_qual();
-  //ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+  ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
 }
 
 /**

@@ -15,15 +15,15 @@ void default_constants() {
   // Base 11, 0, 20, 0
   chassis.pid_heading_constants_set(11.1, 0.0, 30.0, 0);        // Holds the robot straight while going forward without odom
   // Base 3, 0.05, 20, 15
-  chassis.pid_turn_constants_set(5, 0, 35, 9);     // Turn in place constants
+  chassis.pid_turn_constants_set(5.4, 0, 34.5, 9);     // Turn in place constants
   chassis.pid_swing_constants_set(6.0, 0.0, 65.0);           // Swing constants
   chassis.pid_odom_angular_constants_set(6.5, 0.0, 52.5);    // Angular control for odom motions
   chassis.pid_odom_boomerang_constants_set(5.8, 0.0, 32.5);  // Angular control for boomerang motions
 
   // Exit conditions
-  chassis.pid_turn_exit_condition_set(110_ms, 2_deg, 350_ms, 7_deg, 500_ms, 500_ms);
+  chassis.pid_turn_exit_condition_set(110_ms, 2_deg, 350_ms, 5_deg, 500_ms, 500_ms);
   chassis.pid_swing_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
-  chassis.pid_drive_exit_condition_set(90_ms, 1_in, 250_ms, 3_in, 500_ms, 500_ms);
+  chassis.pid_drive_exit_condition_set(90_ms, 0.5_in, 250_ms, 1_in, 500_ms, 500_ms);
   chassis.pid_odom_turn_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 750_ms);
   chassis.pid_odom_drive_exit_condition_set(90_ms, 1_in, 250_ms, 3_in, 500_ms, 750_ms);
   chassis.pid_turn_chain_constant_set(3_deg);
@@ -50,6 +50,8 @@ void worlds_qual() { // The Golden Ticket
 
   SetAllianceMode(AllianceMode::RED);
 
+  OpenClamp();
+
   chassis.pid_turn_set(-27_deg, TURN_SPEED);
   chassis.pid_wait();
 
@@ -67,35 +69,38 @@ void worlds_qual() { // The Golden Ticket
 
   }
 
-  chassis.pid_turn_set(-63_deg, TURN_SPEED);
+  chassis.pid_turn_set(-62_deg, TURN_SPEED);
   chassis.pid_wait();
 
   RunIntake();
 
-  chassis.pid_drive_set(54_in, DRIVE_SPEED, true);
+  chassis.pid_drive_set(55_in, DRIVE_SPEED, true);
   chassis.pid_wait_until(25_in);
   chassis.pid_speed_max_set(60);
   chassis.pid_wait();
 
-  pros::delay(200);
+  pros::delay(400);
 
-  chassis.pid_turn_set(136_deg, 60);
+  chassis.pid_turn_set(138_deg, 50);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(67_in, 40, true);
+  chassis.pid_drive_set(69_in, 30, true);
   chassis.pid_wait();
 
   pros::delay(500);
 
-  chassis.pid_turn_set(93_deg, TURN_SPEED);
+  chassis.pid_drive_set(-4_in, 40, true);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(7_in, 90, true);
+  chassis.pid_turn_set(91_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(10_in, 90, true);
   chassis.pid_wait();
 
   autoLadyBrown(PRIMED_POSITION);
   
-  IntakeWait(AllianceMode::RED, 1000);
+  IntakeWait(AllianceMode::RED, 1200);
 
   //while (!RingColorCheck(AllianceMode::BLUE, intakeOptical.get_hue())) {
 
@@ -103,18 +108,25 @@ void worlds_qual() { // The Golden Ticket
 
   //}
 
-  pros::delay(500);
+  pros::delay(700);
+
+  StopIntake();
+  StopIntake();
+  StopIntake();
+
+  chassis.pid_drive_set(6_in, 90, true);
+  chassis.pid_wait();
 
   StopIntake();
 
   autoLadyBrown(WALLSTAKE_POSITION);
 
-  chassis.pid_drive_set(3.5_in, 90, true);
-  chassis.pid_wait();
-
   pros::delay(100);
 
-  chassis.pid_drive_set(-7.5_in, 90, true);
+  chassis.pid_drive_set(-12_in, 90, true);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(2_in, 90, true);
   chassis.pid_wait();
 
   chassis.pid_turn_set(0_deg, 80);
@@ -160,7 +172,7 @@ void worlds_qual() { // The Golden Ticket
 
   RunIntake();
 
-  chassis.pid_drive_set(69_in, DRIVE_SPEED, true);
+  chassis.pid_drive_set(68_in, DRIVE_SPEED, true);
   chassis.pid_wait_until(30_in);
   chassis.pid_speed_max_set(40);
   chassis.pid_wait();
@@ -209,8 +221,12 @@ void worlds_qual() { // The Golden Ticket
 
   pros::delay(200);
 
+  StopIntake();
+
   chassis.pid_drive_set(-5_in, 50, true);
   chassis.pid_wait();
+
+  RunIntake();
 
   chassis.pid_turn_set(135_deg, TURN_SPEED);
   chassis.pid_wait();
@@ -234,7 +250,7 @@ void worlds_qual() { // The Golden Ticket
   chassis.pid_drive_set(6_in, 50, true);
   chassis.pid_wait();
 
-  pros::delay(500);
+  pros::delay(700);
 
   chassis.pid_drive_set(-12_in, 80, true);
   chassis.pid_wait();
@@ -251,7 +267,7 @@ void worlds_qual() { // The Golden Ticket
 
   StopIntake();
 
-  chassis.pid_drive_set(20_in, 80, true);
+  chassis.pid_drive_set(17_in, 80, true);
   chassis.pid_wait();
 
   chassis.pid_turn_set(88_deg, TURN_SPEED);
@@ -269,22 +285,93 @@ void worlds_qual() { // The Golden Ticket
   chassis.pid_turn_set(45_deg, TURN_SPEED);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(30_in, DRIVE_SPEED, true);
+  chassis.pid_drive_set(35_in, DRIVE_SPEED, true);
   chassis.pid_wait();
 
   chassis.pid_turn_set(-45_deg, TURN_SPEED);
   chassis.pid_wait();
 
+  RunIntake();
+  RunIntake();
+
+  chassis.pid_drive_set(40_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  pros::delay(200);
+
+  chassis.pid_drive_set(-15_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(0_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(15_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
 }
 
-void quals(){
+void rush_blue(){
 
   SetAllianceMode(AllianceMode::BLUE);
 
-  chassis.pid_turn_set(-27_deg, TURN_SPEED);
+  chassis.pid_drive_set(40_in, 127, false);
+  chassis.pid_wait_until(30_in);
+  DoinkerDown();
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-60_in, DRIVE_SPEED, true);
+  chassis.pid_drive_set(-35_in, 95, true);
+  chassis.pid_wait();
+
+  pros::delay(200);
+
+  DoinkerUp();
+
+  chassis.pid_turn_set(205_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  OpenClampDriver();
+
+  chassis.pid_drive_set(-20_in, 30, true);
+  chassis.pid_wait();
+
+  CloseClamp();
+
+  RunIntake();
+
+  pros::delay(300);
+
+  //chassis.pid_drive_set(-10_in, DRIVE_SPEED, true);
+  //chassis.pid_wait();
+
+  chassis.pid_turn_set(-70_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  IntakeUp();
+
+  chassis.pid_drive_set(14_in, 80, true);
+  chassis.pid_wait();
+
+  pros::delay(200);
+
+  IntakeDown();
+
+  IntakeWait(AllianceMode::BLUE, 2000);
+
+  chassis.pid_turn_set(250_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+}
+
+void rush_red(){}
+
+void safe_blue(){
+
+  SetAllianceMode(AllianceMode::BLUE);
+
+  chassis.pid_turn_set(-29_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-57_in, DRIVE_SPEED, true);
   chassis.pid_wait_until(-35_in);
   chassis.pid_speed_max_set(30);
   chassis.pid_wait();
@@ -305,28 +392,130 @@ void quals(){
 
   IntakeDown();
 
-  pros::delay(700);
-
-  chassis.pid_turn_set(140_deg, 40);
+  chassis.pid_drive_set(10_in, 60, true);
   chassis.pid_wait();
+
+  pros::delay(200);
+
+  chassis.pid_drive_set(-10_in, 60, true);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(10_in, 60, true);
+  chassis.pid_wait();
+
+  pros::delay(200);
+
+  chassis.pid_drive_set(-10_in, 60, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(130_deg, 60);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-25_in, 40, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(47_deg, 60);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(37_in, 70, true);
+  chassis.pid_wait();
+
+  pros::delay(200);
+
+  oneIntake();
+
+  pros::delay(400);
+
+  chassis.pid_turn_set(-85_deg, 60);
+  chassis.pid_wait();
+
+  RunIntake();
 
   IntakeUp();
 
-  chassis.pid_drive_set(15_in, 40, true);
+  chassis.pid_drive_set(50_in, 70, true);
   chassis.pid_wait();
 
   IntakeDown();
 
-  pros::delay(700);
+  pros::delay(400);
 
-  chassis.pid_drive_set(-15_in, 40, true);
+  chassis.pid_drive_set(5_in, 70, true);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(0_deg, 60);
+  chassis.pid_drive_set(-5_in, 70, true);
   chassis.pid_wait();
 
-  chassis.pid_drive_set(22_in, 70, true);
+}
+
+void safe_red(){
+
+  SetAllianceMode(AllianceMode::RED);
+
+  chassis.pid_turn_set(-29_deg, TURN_SPEED);
   chassis.pid_wait();
+
+  chassis.pid_drive_set(-57_in, DRIVE_SPEED, true);
+  chassis.pid_wait_until(-35_in);
+  chassis.pid_speed_max_set(30);
+  chassis.pid_wait();
+
+  CloseClamp();
+
+  pros::delay(500);
+
+  RunIntake();
+
+  chassis.pid_turn_set(9_deg, TURN_SPEED);
+  chassis.pid_wait();
+  
+  IntakeUp();
+
+  chassis.pid_drive_set(9_in, 60, true);
+  chassis.pid_wait();
+
+  IntakeDown();
+
+  chassis.pid_drive_set(10_in, 60, true);
+  chassis.pid_wait();
+
+  pros::delay(200);
+
+  chassis.pid_drive_set(-10_in, 60, true);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(10_in, 60, true);
+  chassis.pid_wait();
+
+  pros::delay(200);
+
+  chassis.pid_drive_set(-10_in, 60, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(130_deg, 60);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-25_in, 40, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(49_deg, 60);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(25_in, 70, true);
+  chassis.pid_wait();
+
+  pros::delay(1200);
+
+  chassis.pid_turn_set(-120_deg, 60);
+  chassis.pid_wait();
+
+  autoLadyBrown(WALLSTAKE_POSITION);
+
+  chassis.pid_drive_set(45_in, 70, true);
+  chassis.pid_wait();
+
+  StopIntake();
+  StopIntake();
 
 }
 
