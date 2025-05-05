@@ -9,7 +9,7 @@ const int WALLSTAKE_POSITION = 23500; // old saved 22700
 
 bool scoreMode = false;
 
-ez::PID liftPID{0.043, 0.0, 0.1, 0, "Lift"};
+ez::PID liftPID{0.044, 0.035, 0.1, 50, "Lift"};
 
 void LiftController(){
 

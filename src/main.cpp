@@ -71,6 +71,9 @@ void initialize() {
   // Update optical sensor every 15ms instead of every 100ms
   intakeOptical.set_integration_time(15);
 
+  // Update rotation sensor a little faster 
+  liftRotation.set_data_rate(5);
+
   liftPID.exit_condition_set(80, 50, 300, 150, 500, 500);
 
 }
