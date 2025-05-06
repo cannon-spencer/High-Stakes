@@ -6,6 +6,7 @@ void skills();
 void RedMatchAuton();
 void BlueMatchAuton();
 void MatchAuton();
+void tounge_test();
 
 void drive_example();
 void turn_example();

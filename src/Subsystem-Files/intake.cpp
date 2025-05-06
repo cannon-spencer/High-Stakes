@@ -35,13 +35,16 @@ void SetIntake(int f_intake, int m_intake){
     
 }
 
-void RunIntake(IntakeSpeed speed) {
+void RunIntake(IntakeSpeed speed, int pulseTime) {
     switch (speed) {
         case IntakeSpeed::FAST:
             SetIntake(F_INTAKE_SPEED, INTAKE_SPEED);
             break;
         case IntakeSpeed::SLOW:
             SetIntake(F_INTAKE_SPEED / 2, INTAKE_SPEED / 2);
+            break;
+        case IntakeSpeed::MED:
+            SetIntake(F_INTAKE_SPEED / 1.5, INTAKE_SPEED / 1.5);
             break;
         case IntakeSpeed::STOP:
             SetIntake(0, 0);
@@ -51,6 +54,9 @@ void RunIntake(IntakeSpeed speed) {
             break;
         case IntakeSpeed::UNHOOK:
             mainIntake.move_relative(-100, INTAKE_SPEED);
+            break;
+        case IntakeSpeed::PULSE:
+            PulseIntakeBlocking(pulseTime);
             break;
     }
 }
@@ -116,6 +122,10 @@ void SetAllianceMode(AllianceMode aMode) {
     DisplayAllianceMode();
 }
 
+AllianceMode GetAllianceMode(){
+    return intakeMode;
+}
+
 
 IntakeExit IntakeWait(AllianceMode aMode, int maxWaitTimeMs) {
     int startTime = pros::millis(); // Record the start time
@@ -142,6 +152,24 @@ IntakeExit IntakeWait(AllianceMode aMode, int maxWaitTimeMs) {
     return IntakeExit::RING_DETECTED;
 }
 
+void PulseIntakeBlocking(int ms) {
+    const int pulseTime = 80;
+    int elapsed = 0;
+
+    while (elapsed < ms) {
+        RunIntake(IntakeSpeed::FAST);
+        pros::delay(pulseTime);
+        elapsed += pulseTime;
+
+        if (elapsed >= ms) break;
+
+        RunIntake(IntakeSpeed::STOP);
+        pros::delay(pulseTime);
+        elapsed += pulseTime ;
+    }
+
+    RunIntake(IntakeSpeed::STOP);
+}
 
 
 
@@ -226,7 +254,7 @@ void IntakeController(){
                 // make sure we're not scoring lady brown rings
                 if(!scoreMode){
                     RunIntake(IntakeSpeed::REVERSE);
-                    pros::delay(150);
+                    pros::delay(180); //150
                     RunIntake(IntakeSpeed::FAST);
                 }
 
@@ -237,3 +265,4 @@ void IntakeController(){
     }
 }
 pros::Task IntakeTask(IntakeController);
+

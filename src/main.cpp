@@ -48,6 +48,7 @@ void initialize() {
       {"Blue Match Auton\n\nNegative Setup", BlueMatchAuton},
       {"Red Match Auton\n\nPositive Setup", RedMatchAuton},
       {"Skills\n\nRight side setup", skills},
+      {"Tounge Test", tounge_test},
       {"Drive\n\nDrive forward and come back", drive_example},
       {"Turn\n\nTurn 3 times.", turn_example},
       {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
@@ -235,7 +236,7 @@ void opcontrol() {
   LiftTask.resume();
   LiftTask.notify();
 
-  // set lady btown score mode off
+  // set lady brown score mode off
   scoreMode = false;
 
   // Store the start time for timer calculations
