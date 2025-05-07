@@ -230,7 +230,7 @@ void IntakeController(){
                 // reverse out of the front
                 // check for lady brown staging and manual set flag
                 if(scoreMode || ejectFront){
-                    pros::delay(40);
+                    pros::delay(60);
                     RunIntake(IntakeSpeed::REVERSE);
                     pros::delay(425);
                     RunIntake(IntakeSpeed::FAST);

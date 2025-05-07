@@ -419,7 +419,7 @@ void MatchAuton(){
 
   // drive toward first stack
   RunIntake(IntakeSpeed::FAST);
-  chassis.pid_drive_set(47.5_in, DRIVE_SPEED);
+  chassis.pid_drive_set(47_in, DRIVE_SPEED);
   chassis.pid_wait();
   //pros::delay(650);
   
