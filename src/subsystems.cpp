@@ -17,7 +17,7 @@ pros::Optical intakeOptical(17);
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {-21, -7, -6},     // Left Chassis Ports (negative port will reverse it!)
+    {-21, -8, -6},     // Left Chassis Ports (negative port will reverse it!)
     {5, 3, 10},  // Right Chassis Ports (negative port will reverse it!)
 
     14,      // IMU Port

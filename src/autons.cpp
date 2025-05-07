@@ -319,7 +319,110 @@ void rush_blue(){
   DoinkerDown();
   chassis.pid_wait();
 
-  chassis.pid_drive_set(-35_in, 95, true);
+  chassis.pid_drive_set(-45_in, 95, true);
+  chassis.pid_wait();
+
+  pros::delay(200);
+
+  DoinkerUp();
+
+  chassis.pid_drive_set(-5_in, 95, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(205_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  OpenClampDriver();
+
+  chassis.pid_drive_set(-25_in, 60, true);
+  chassis.pid_wait();
+
+  CloseClamp();
+
+  RunIntake();
+
+  pros::delay(400);
+
+  chassis.pid_drive_set(5_in, 60, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(303_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  IntakeUp();
+
+  chassis.pid_drive_set(18.5_in, 60, true);
+  chassis.pid_wait();
+
+  pros::delay(200);
+
+  IntakeDown();
+
+  IntakeWait(AllianceMode::BLUE, 1000);
+
+  chassis.pid_turn_set(232_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(40_in, 40, true);
+  chassis.pid_wait();
+
+  pros::delay(200);
+
+  chassis.pid_drive_set(-7_in, 60, true);
+  chassis.pid_wait();
+  
+  chassis.pid_turn_set(266_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  ReverseIntake();
+
+  chassis.pid_drive_set(25_in, 127, true);
+  chassis.pid_wait();
+
+  pros::delay(500);
+
+  RunIntake();
+
+  pros::delay(500);
+
+  chassis.pid_drive_set(-15_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  pros::delay(100);
+
+  chassis.pid_drive_set(22_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  pros::delay(200);
+
+  chassis.pid_drive_set(-15_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  DoinkerDown();
+
+  chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(135_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(446_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  OpenClamp();
+
+}
+
+void rush_red(){
+
+  SetAllianceMode(AllianceMode::RED);
+
+  chassis.pid_drive_set(40_in, 127, false);
+  chassis.pid_wait_until(30_in);
+  DoinkerDown();
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(-45_in, 95, true);
   chassis.pid_wait();
 
   pros::delay(200);
@@ -331,38 +434,71 @@ void rush_blue(){
 
   OpenClampDriver();
 
-  chassis.pid_drive_set(-20_in, 30, true);
+  chassis.pid_drive_set(-20_in, 60, true);
   chassis.pid_wait();
 
   CloseClamp();
 
   RunIntake();
 
-  pros::delay(300);
+  pros::delay(400);
 
-  //chassis.pid_drive_set(-10_in, DRIVE_SPEED, true);
-  //chassis.pid_wait();
+  chassis.pid_drive_set(5_in, 60, true);
+  chassis.pid_wait();
 
-  chassis.pid_turn_set(-70_deg, TURN_SPEED);
+  chassis.pid_turn_set(310_deg, TURN_SPEED);
   chassis.pid_wait();
 
   IntakeUp();
 
-  chassis.pid_drive_set(14_in, 80, true);
+  chassis.pid_drive_set(17_in, 60, true);
   chassis.pid_wait();
 
   pros::delay(200);
 
   IntakeDown();
 
-  IntakeWait(AllianceMode::BLUE, 2000);
+  IntakeWait(AllianceMode::RED, 2000);
 
-  chassis.pid_turn_set(250_deg, TURN_SPEED);
+  chassis.pid_turn_set(235_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(40_in, 60, true);
+  chassis.pid_wait();
+
+  pros::delay(200);
+
+  chassis.pid_drive_set(-5_in, 60, true);
+  chassis.pid_wait();
+  
+  chassis.pid_turn_set(268_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  ReverseIntake();
+
+  chassis.pid_drive_set(15_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  RunIntake();
+
+  chassis.pid_drive_set(-15_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(10_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  pros::delay(400);
+
+  chassis.pid_drive_set(-20_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+  chassis.pid_turn_set(160_deg, TURN_SPEED);
+  chassis.pid_wait();
+
+  chassis.pid_drive_set(40_in, DRIVE_SPEED, true);
   chassis.pid_wait();
 
 }
-
-void rush_red(){}
 
 void safe_blue(){
 

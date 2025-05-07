@@ -173,7 +173,7 @@ void IntakeController(){
             // reverse intake when a ring is detected
             if (!scoreMode && RingColorCheck(intakeMode, intakeOptical.get_hue())){
                 //master.rumble(".");
-                pros::delay(220);
+                pros::delay(205); // short hooks 220, long hooks 205
                 StopIntake();
                 pros::delay(150);
                 RunIntake();
