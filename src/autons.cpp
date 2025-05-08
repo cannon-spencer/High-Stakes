@@ -460,11 +460,10 @@ void MatchAuton(){
   chassis.pid_wait();
 
   // if we're red we drop the goal off in the corner
+  /*
   if(GetAllianceMode() == AllianceMode::RED){ 
-    chassis.pid_drive_set(-8_in, DRIVE_SPEED);
+    chassis.pid_drive_set(-6_in, DRIVE_SPEED);
     OpenClamp();
-    chassis.pid_wait();
-    chassis.pid_drive_set(8_in, DRIVE_SPEED);
     chassis.pid_wait();
   } 
   
@@ -472,10 +471,23 @@ void MatchAuton(){
   else {
     OpenClamp();
   }
-
+  */
 
   // drive towards last ring
-  chassis.pid_drive_set(50_in, DRIVE_SPEED);
+  /*
+  if(GetAllianceMode() == AllianceMode::RED){
+    chassis.pid_drive_set(56_in,DRIVE_SPEED);
+  }
+
+  else{
+    chassis.pid_drive_set(50_in, DRIVE_SPEED);
+  }
+  */
+  // for now making both autos the same
+
+  OpenClamp();
+
+  chassis.pid_drive_set(50_in,DRIVE_SPEED);
   RunIntake(IntakeSpeed::MED);
   //chassis.pid_wait_until(40_in);
   //chassis.pid_speed_max_set(50);
