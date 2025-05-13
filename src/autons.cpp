@@ -419,7 +419,7 @@ void MatchAuton(){
 
   // drive toward first stack
   RunIntake(IntakeSpeed::FAST);
-  chassis.pid_drive_set(47_in, DRIVE_SPEED);
+  chassis.pid_drive_set(48.5_in, DRIVE_SPEED);
   chassis.pid_wait();
   //pros::delay(650);
   
@@ -442,8 +442,8 @@ void MatchAuton(){
   // swing towards ring on the line
   chassis.pid_swing_set(ez::RIGHT_SWING, 0_deg, 100);
   chassis.pid_wait();
-  chassis.pid_drive_set(3_in, 40);
-  chassis.pid_wait();
+  //chassis.pid_drive_set(1_in, 40);
+  //chassis.pid_wait();
   pros::delay(500); //800
   
   //Turn around and drive towards corner
@@ -498,7 +498,7 @@ void MatchAuton(){
 
 
   // clamp last goal
-  chassis.pid_turn_set(201_deg, TURN_SPEED);
+  chassis.pid_turn_set(205_deg, TURN_SPEED);
   chassis.pid_wait();
   AsyncLadyBrown(WALLSTAKE_POSITION + 2000);
   chassis.pid_drive_set(-32.5_in, DRIVE_SPEED);
@@ -512,7 +512,7 @@ void MatchAuton(){
   RunIntake(IntakeSpeed::FAST);
 
   // turn at the end to touch the bar
-  chassis.pid_turn_set(-45_deg, TURN_SPEED);
+  chassis.pid_turn_set(-35_deg, TURN_SPEED);
   chassis.pid_wait();
 
 

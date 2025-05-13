@@ -180,8 +180,8 @@ void IntakeController(){
 
     while(1){
         
-        // Driver Control Task
-        if(!pros::competition::is_autonomous()){
+        // Driver Control Task - main block requires autonomous mode off and disable mode off
+        if(!pros::competition::is_autonomous() && !pros::competition::is_disabled()){
             
             // ensure rejecting reverts to auto mode after autonomous
             SetRejectMode(EjectMode::AUTO);

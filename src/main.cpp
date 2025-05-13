@@ -79,13 +79,20 @@ void initialize() {
 
 }
 
+// prevent bug in field control 
+bool ranAutonomous = false;
+
+
 /**
  * Runs while the robot is in the disabled state of Field Management System or
  * the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
  */
 void disabled() {
-  // . . .
+  if(ranAutonomous)
+    IntakeDown(); 
+  else
+    IntakeUp();
 }
 
 /**
@@ -98,7 +105,7 @@ void disabled() {
  * starts.
  */
 void competition_initialize() {
-  // . . .
+  IntakeUp(); // default intake up
 }
 
 /**
@@ -121,6 +128,7 @@ void autonomous() {
   IntakeTask.resume();
   LiftTask.resume();
   LiftTask.notify();
+  ranAutonomous = true;                          // Set the flag to true so we know we ran an auton
   ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
 }
 
@@ -235,6 +243,9 @@ void opcontrol() {
   IntakeTask.resume();
   LiftTask.resume();
   LiftTask.notify();
+
+  // make sure intake is down
+  IntakeDown(); 
 
   // set lady brown score mode off
   scoreMode = false;
