@@ -1,6 +1,15 @@
+/**
+ * @file comp_timer.cpp
+ * @brief Match timer utility and endgame warnings.
+ *
+ * Sends timed rumble alerts to the driver controller
+ * during the final 5 seconds before the 1-minute mark.
+ */
+
 #include "main.h"
 #include "subsystems.hpp"
 
+// Competition timing constants
 const int DRIVER_CONTROL_TIME = 90000;                      // 90 seconds
 const int WARNING_START_TIME = DRIVER_CONTROL_TIME - 35000; // 35 seconds
 const int WARNING_END_TIME = DRIVER_CONTROL_TIME - 30000;   // 30 seconds
@@ -9,6 +18,12 @@ int matchStartTime = 0;                                     // Track the time op
 int lastRumbleTime = 0;                                     // Track last rumble event
 
 
+/**
+ * @brief Sends controller rumble alerts during endgame.
+ *
+ * If competition is connected, and the match is in its final 5 seconds before
+ * the 60-second mark, this function triggers periodic rumbles to alert drivers.
+ */
 void CompTimerController(){
     // Rumble Controller in Competition
     if(pros::competition::is_connected()){

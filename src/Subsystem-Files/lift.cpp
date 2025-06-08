@@ -1,16 +1,37 @@
+/**
+ * @file lift.cpp
+ * @brief Lift control logic using PID for scoring.
+ *
+ * Manages scoring behavior, toggling between "primed" and "wallstake" positions
+ * depending on operator input. Uses a PID loop to control lift height based on
+ * rotation sensor feedback.
+ */
+
 #include "main.h"
 #include "subsystems.hpp"
 #include <cstdint>
 
+const int BASE_POSITION = 9000;          // Default resting height
+const int PRIMED_POSITION = 10800;       // Slightly lifted "ready to score" height
+const int WALLSTAKE_POSITION = 23500;    // Full extension height for scoring
 
-const int BASE_POSITION = 9000;
-const int PRIMED_POSITION = 10800;
-const int WALLSTAKE_POSITION = 23500; // old saved 22700
+bool scoreMode = false;                  // Global scoring mode toggle
 
-bool scoreMode = false;
-
+/// PID controller instance for lift motor group
+/// @param kP Proportional gain
+/// @param kI Integral gain
+/// @param kD Derivative gain
+/// @param kF Feedforward (unused)
+/// @param name PID name for debugging
 ez::PID liftPID{0.044, 0, 0.16, 0, "Lift"};
 
+
+/**
+ * @brief Lift controller task loop.
+ *
+ * Responds to operator input to toggle scoring mode and set lift targets accordingly.
+ * Uses sensor feedback and PID control to precisely position the lift.
+ */
 void LiftController(){
 
     // pre-set base target position
@@ -56,6 +77,13 @@ void LiftController(){
 pros::Task LiftTask(LiftController);
 
 
+/**
+ * @brief Waits until the lift reaches a specified target position.
+ *
+ * This is a blocking function that halts progress until the PID controller exits.
+ *
+ * @param position Target lift position in encoder ticks
+ */
 void WaitLadyBrown(int position){
     liftPID.target_set(position);
 
@@ -66,4 +94,9 @@ void WaitLadyBrown(int position){
 
 }
 
+/**
+ * @brief Sends lift to a specified target without blocking.
+ *
+ * @param position Target lift position in encoder ticks
+ */
 void AsyncLadyBrown(int position){ liftPID.target_set(position); }

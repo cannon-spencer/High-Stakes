@@ -1,6 +1,14 @@
+/**
+ * @file drive.hpp
+ * @brief Enumerated drive mode control for opcontrol.
+ *
+ * Defines a scoped enum `drive_type` for various arcade and tank configurations,
+ * and allows dynamic switching during runtime via `ChassisController`.
+ */
+
 #pragma once
 
-// Scoped enum for drive modes
+/// Control schemes supported by the chassis.
 enum class drive_type {
     TANK,
     ARCADE_SPLIT,
@@ -9,5 +17,5 @@ enum class drive_type {
     ARCADE_FLIPPED_SINGLE
 };
 
-// Declare the function that uses it
+/// Dispatches control based on selected drive mode.
 void ChassisController(drive_type driveMode);

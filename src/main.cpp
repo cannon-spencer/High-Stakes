@@ -1,47 +1,46 @@
+/**
+ * @file main.cpp
+ * @brief Core control entry point for VEX competition lifecycle.
+ *
+ * This file defines all lifecycle functions required by the PROS competition template:
+ * - `initialize()` for pre-match hardware setup
+ * - `autonomous()` for executing selected routines
+ * - `opcontrol()` for handling tele-op logic
+ *
+ * Subsystems like intake, lift, clamp, and drive are modularized and called from here.
+ * The file also integrates EZ-Template for odometry-based movement and autonomous selection.
+ *
+ * @note
+ *   This is the central coordination point for the robot's runtime behavior.
+ */
+
 #include "main.h"
 #include "subsystems.hpp"
 
-#include "Subsystem-Files/clamp.hpp"
-#include "Subsystem-Files/doinker.hpp"
-#include "Subsystem-Files/drive.hpp"
-#include "Subsystem-Files/intake.hpp"
-#include "Subsystem-Files/lift.hpp"
-#include "Subsystem-Files/comp_timer.hpp"
-
 /**
- * Runs initialization code. This occurs as soon as the program is started.
+ * @brief Initializes all robot hardware, chassis, and sensors.
  *
- * All other competition modes are blocked by initialize; it is recommended
- * to keep execution time for this mode under a few seconds.
+ * Sets up odometry, optical sensor sampling rates, autonomous routines, and controller curves.
+ * Configures tools like autonomous selector and drive curve settings.
  */
 void initialize() {
 
-  // DONT RUN STUFF BEFORE DELAY (task pauses were crashing the code)
   ez::ez_template_print();
   pros::delay(500);
 
-  // Look at your horizontal tracking wheel and decide if it's in front of the midline of your robot or behind it
-  //  - change `back` to `front` if the tracking wheel is in front of the midline
   chassis.odom_tracker_back_set(&horiz_tracker);
-  
-  // Look at your vertical tracking wheel and decide if it's to the left or right of the center of the robot
-  //  - change `left` to `right` if the tracking wheel is to the right of the centerline
   chassis.odom_tracker_left_set(&vert_tracker);
 
   // Configure your chassis controls
   chassis.opcontrol_curve_buttons_toggle(false);    // Enables modifying the controller curve with buttons on the joysticks
   chassis.opcontrol_drive_activebrake_set(0.0);     // Sets the active brake kP. We recommend ~2.  0 will disable.
-  chassis.opcontrol_curve_default_set(0.25, 2.25);  // Defaults for curve. If using tank, only the first parameter is used. (Comment this line out if you have an SD card!)
+  chassis.opcontrol_curve_default_set(0.25, 2.25);  // Defaults for curve. If using tank, only the first parameter is used.
 
-  // Set the drive to your own constants from autons.cpp!
+  // Set the drive to constants from autons.cpp
   default_constants();
 
   // Use a limit switch to select autons
   ez::as::limit_switch_lcd_initialize(&selectButton);
-
-  // These are already defaulted to these buttons, but you can change the left/right curve buttons here!
-  // chassis.opcontrol_curve_buttons_left_set(pros::E_CONTROLLER_DIGITAL_LEFT, pros::E_CONTROLLER_DIGITAL_RIGHT);  // If using tank, only the left side is used.
-  // chassis.opcontrol_curve_buttons_right_set(pros::E_CONTROLLER_DIGITAL_Y, pros::E_CONTROLLER_DIGITAL_A);
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
@@ -79,23 +78,20 @@ void initialize() {
 
 }
 
-// prevent bug in field control 
-bool ranAutonomous = false;
-
 
 /**
+ * @brief Handles logic for when the robot enters the disabled state.
+ * 
  * Runs while the robot is in the disabled state of Field Management System or
  * the VEX Competition Switch, following either autonomous or opcontrol. When
  * the robot is enabled, this task will exit.
  */
-void disabled() {
-  if(ranAutonomous)
-    IntakeDown(); 
-  else
-    IntakeUp();
-}
+void disabled(){}
 
 /**
+ *
+ * @brief Competition-safe setup function for pre-autonomous preparation.
+ *
  * Runs after initialize(), and before autonomous when connected to the Field
  * Management System or the VEX Competition Switch. This is intended for
  * competition-specific initialization routines, such as an autonomous selector
@@ -109,6 +105,8 @@ void competition_initialize() {
 }
 
 /**
+ * @brief Executes the autonomous routine selected from the LCD menu.
+ * 
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
  * the Field Management System or the VEX Competition Switch in the autonomous
@@ -132,8 +130,15 @@ void autonomous() {
   ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
 }
 
+
 /**
- * Simplifies printing tracker values to the brain screen
+ * @brief Helper function to print tracker sensor data to the Brain screen.
+ *
+ * Includes tracker reading and its calibrated offset from the chassis center.
+ *
+ * @param tracker Pointer to a tracking wheel object.
+ * @param name    Tracker label ("l", "r", "b", "f").
+ * @param line    Brain screen line number to print to.
  */
 void screen_print_tracker(ez::tracking_wheel *tracker, std::string name, int line) {
   std::string tracker_value = "", tracker_width = "";
@@ -145,8 +150,11 @@ void screen_print_tracker(ez::tracking_wheel *tracker, std::string name, int lin
   ez::screen_print(tracker_value + tracker_width, line);  // Print final tracker text
 }
 
+
 /**
- * Ez screen task
+ *
+ * @brief Runs an odometry debug page on the screen.
+ *
  * Adding new pages here will let you view them during user control or autonomous
  * and will help you debug problems you're having
  */
@@ -184,45 +192,10 @@ void ez_screen_task() {
 }
 pros::Task ezScreenTask(ez_screen_task);
 
-/**
- * Gives you some extras to run in your opcontrol:
- * - run your autonomous routine in opcontrol by pressing DOWN and B
- *   - to prevent this from accidentally happening at a competition, this
- *     is only enabled when you're not connected to competition control.
- * - gives you a GUI to change your PID values live by pressing X
- */
-void ez_template_extras() {
-  // Only run this when not connected to a competition switch
-  if (!pros::competition::is_connected()) {
-    // PID Tuner
-    // - after you find values that you're happy with, you'll have to set them in auton.cpp
-
-    // Enable / Disable PID Tuner
-    //  When enabled:
-    //  * use A and Y to increment / decrement the constants
-    //  * use the arrow keys to navigate the constants
-    if (master.get_digital_new_press(DIGITAL_X))
-      chassis.pid_tuner_toggle();
-
-    // Trigger the selected autonomous routine
-    if (master.get_digital(DIGITAL_B) && master.get_digital(DIGITAL_DOWN)) {
-      pros::motor_brake_mode_e_t preference = chassis.drive_brake_get();
-      autonomous();
-      chassis.drive_brake_set(preference);
-    }
-
-    // Allow PID Tuner to iterate
-    chassis.pid_tuner_iterate();
-  }
-
-  // Disable PID Tuner when connected to a comp switch
-  else {
-    if (chassis.pid_tuner_enabled())
-      chassis.pid_tuner_disable();
-  }
-}
 
 /**
+ * @brief Main driver control loop.
+ *
  * Runs the operator control code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
  * the Field Management System or the VEX Competition Switch in the operator
@@ -254,9 +227,6 @@ void opcontrol() {
   matchStartTime = pros::millis();
 
   while (true) {
-    // Gives you some extras to make EZ-Template ezier
-    ez_template_extras();
-
     // Run the drive mode
     ChassisController(drive_type::ARCADE_SPLIT);
 

@@ -1,3 +1,13 @@
+/**
+ * @file intake.cpp
+ * @brief Intake subsystem logic for autonomous and driver control.
+ *
+ * This file defines the intake control system including color sorting,
+ * piston deployment, jam detection, and alliance-based behavior. It also manages
+ * dynamic runtime switching between alliance colors and handles intake behavior
+ * during scoring scenarios.
+ */
+
 #include "main.h"
 #include "subsystems.hpp"
 
@@ -19,6 +29,14 @@ int lastRunningTime = 0;
 bool wasIntakeStopped = true;
 
 
+/**
+ * @brief Directly sets motor speeds for front and main intakes.
+ *
+ * Tracks start time and flags for jam detection.
+ *
+ * @param f_intake Speed for front intake motor
+ * @param m_intake Speed for main intake group
+ */
 void SetIntake(int f_intake, int m_intake){
     frontIntake.move(f_intake);
     mainIntake.move(m_intake);
@@ -35,6 +53,15 @@ void SetIntake(int f_intake, int m_intake){
     
 }
 
+
+/**
+ * @brief Runs the intake in various modes based on enum.
+ *
+ * Supports FAST, SLOW, MED, STOP, REVERSE, UNHOOK, and PULSE modes.
+ *
+ * @param speed IntakeSpeed enum
+ * @param pulseTime Optional pulse time in ms (used only if PULSE is selected)
+ */
 void RunIntake(IntakeSpeed speed, int pulseTime) {
     switch (speed) {
         case IntakeSpeed::FAST:
@@ -61,10 +88,22 @@ void RunIntake(IntakeSpeed speed, int pulseTime) {
     }
 }
 
+
+/** @brief Retracts intake piston. */
 void IntakeUp(){ intakePiston.set_value(false); }
 
+
+/** @brief Deploys intake piston. */
 void IntakeDown(){ intakePiston.set_value(true); }
 
+
+/**
+ * @brief Determines if intake is currently running.
+ *
+ * Uses velocity thresholds to infer intake motor activity.
+ *
+ * @return true if intake is moving; false otherwise.
+ */
 bool IsIntakeRunning() {
     double mainIntakeVelocity = mainIntake.get_actual_velocity();
     double frontIntakeVelocity = frontIntake.get_actual_velocity();
@@ -75,6 +114,15 @@ bool IsIntakeRunning() {
 }
 
 
+/**
+ * @brief Checks if a hue matches the rejection condition for the selected alliance.
+ *
+ * This ensures rings of the *opposite* color are ejected.
+ *
+ * @param aMode AllianceMode enum
+ * @param hue Current hue value from optical sensor
+ * @return true if a ring of the opposite color is detected
+ */
 bool RingColorCheck(AllianceMode aMode, double hue) {
     double blue_min = 165, blue_max = 250;
     double red_min = 1, red_max = 20;
@@ -88,6 +136,11 @@ bool RingColorCheck(AllianceMode aMode, double hue) {
 }
 
 
+/**
+ * @brief Sets the ejection mode (front or automatic).
+ *
+ * @param eMode EjectMode enum
+ */
 void SetRejectMode(EjectMode eMode){
     if(eMode == EjectMode::FRONT)
         ejectFront = true;
@@ -96,6 +149,9 @@ void SetRejectMode(EjectMode eMode){
 }
 
 
+/**
+ * @brief Displays current alliance mode on controller LCD.
+ */
 void DisplayAllianceMode(){
     switch (intakeMode) {
         case AllianceMode::BLUE: master.print(0, 0, "ALLIANCE: BLUE"); break;
@@ -105,6 +161,9 @@ void DisplayAllianceMode(){
 }
 
 
+/**
+ * @brief Cycles through BLUE -> RED -> OFF -> BLUE, etc.
+ */
 void CycleAllianceMode() {
     // Cycle to next mode
     switch (intakeMode) {
@@ -117,16 +176,33 @@ void CycleAllianceMode() {
     DisplayAllianceMode();
 }
 
+
+/**
+ * @brief Displays current alliance mode on controller LCD.
+ */
 void SetAllianceMode(AllianceMode aMode) {
     intakeMode = aMode;
     DisplayAllianceMode();
 }
 
+
+/**
+ * @brief Returns the current alliance mode.
+ *
+ * @return AllianceMode
+ */
 AllianceMode GetAllianceMode(){
     return intakeMode;
 }
 
 
+/**
+ * @brief Blocks until an opposite-color ring is detected or timeout occurs.
+ *
+ * @param aMode Current alliance mode
+ * @param maxWaitTimeMs Maximum time to wait in milliseconds
+ * @return IntakeExit enum indicating result (TIMEOUT or RING_DETECTED)
+ */
 IntakeExit IntakeWait(AllianceMode aMode, int maxWaitTimeMs) {
     int startTime = pros::millis(); // Record the start time
 
@@ -152,6 +228,12 @@ IntakeExit IntakeWait(AllianceMode aMode, int maxWaitTimeMs) {
     return IntakeExit::RING_DETECTED;
 }
 
+
+/**
+ * @brief Pulses the intake motor on and off repeatedly for a given duration.
+ *
+ * @param ms Total pulse duration in milliseconds
+ */
 void PulseIntakeBlocking(int ms) {
     const int pulseTime = 80;
     int elapsed = 0;
@@ -172,7 +254,12 @@ void PulseIntakeBlocking(int ms) {
 }
 
 
-
+/**
+ * @brief Intake task loop for both driver control and autonomous.
+ *
+ * Handles jam recovery, color-based ejection, piston control, alliance detection,
+ * and interaction with the scoring subsystem. Should be launched as a task.
+ */
 void IntakeController(){
 
     // Display mode on Startup
@@ -254,7 +341,7 @@ void IntakeController(){
                 // make sure we're not scoring lady brown rings
                 if(!scoreMode){
                     RunIntake(IntakeSpeed::REVERSE);
-                    pros::delay(180); //150
+                    pros::delay(180);
                     RunIntake(IntakeSpeed::FAST);
                 }
 

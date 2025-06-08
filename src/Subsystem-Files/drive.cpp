@@ -1,6 +1,23 @@
+/**
+ * @file drive.cpp
+ * @brief Dispatches driver control logic for different driving styles.
+ *
+ * Uses a custom `drive_type` enum to switch between tank, standard arcade,
+ * or flipped control modes during operator control.
+ */
+
 #include "main.h"
 #include "subsystems.hpp"
 
+
+/**
+ * @brief Selects and runs the appropriate control scheme.
+ *
+ * This function is called once per opcontrol loop and allows for
+ * dynamically changing drive input styles.
+ *
+ * @param driveMode Control mode selection from drive_type enum.
+ */
 void ChassisController(drive_type driveMode){
     switch (driveMode) {
         
