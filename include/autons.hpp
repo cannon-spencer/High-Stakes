@@ -39,11 +39,6 @@ void BlueMatchAuton();
  */
 void MatchAuton();
 
-/**
- * @brief Routine used to test intake reverse-pulsing for ring priming.
- */
-void tounge_test();
-
 /// @name Motion Examples and Demos
 /// @{
 
