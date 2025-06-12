@@ -2,7 +2,9 @@
 *A modular, multithreaded control stack built with PROS for [vex robotics competition](https://www.vexrobotics.com/v5/competition/vrc-current-game).*
 
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](#license)
- [![PROS](https://img.shields.io/badge/built%20with-PROS-green)](https://pros.cs.purdue.edu) 
+[![PROS](https://img.shields.io/badge/built%20with-PROS-green)](https://pros.cs.purdue.edu) 
+[![EZ](https://img.shields.io/badge/built%20with-EZ-pink)](https://ez-robotics.github.io/EZ-Template/) 
+
 
 ---
 
@@ -31,10 +33,6 @@ The codebase is fully documented with Doxygen-style comments, self-contained hea
 | **On-Controller Tuning** | Live PID tuner UI (A/Y/X buttons) for rapid iteration |
 
 ---
-
-## Demo
-[![Watch the demo](https://img.youtube.com/vi/5xkvFR0hDIs/hqdefault.jpg)](https://youtu.be/5xkvFR0hDIs)
-[![Watch the demo](https://img.youtube.com/vi/GQa3_nZoEAI/hqdefault.jpg)](https://youtu.be/GQa3_nZoEAI)
 
 | Clip | Behaviors Highlighted |
 | ---- | --------------------- |
@@ -86,19 +84,31 @@ flowchart TD
 ### Control-Loop Model
 ```mermaid
 flowchart LR
-  ref["Reference<br/>(target)"]
-  sum["Σ&nbsp;(summer)"]
-  ctrl["PID<br/>controller"]
-  volt["Motor<br/>voltage"]
-  plant["Chassis<br/>plant"]
-  meas["Actual<br/>pose"]
+  ref["Reference<br/>(target pose)"]
+  err["Error<br/>(target - actual pose)"]
+  yawPID["PID<br/>(Heading/Yaw)"]
+  leftPID["PID<br/>(Left Chassis)"]
+  rightPID["PID<br/>(Right Chassis)"]
+  combine["Combine<br/>PID Outputs"]
+  volt["Motor<br/>Voltage"]
+  drivetrain["Drivetrain<br/>Model"]
+  meas["Actual<br/>Pose"]
 
-  ref --> sum
-  meas -.-> sum
-  sum --> ctrl
-  ctrl --> volt
-  volt --> plant
-  plant --> meas
+  ref --> err
+  meas -.-> err
+
+  err --> yawPID
+  err --> leftPID
+  err --> rightPID
+
+  yawPID --> combine
+  leftPID --> combine
+  rightPID --> combine
+
+  combine --> volt
+  volt --> drivetrain
+  drivetrain --> meas
+
 ```
 
 ### Continuous-Time Law
@@ -107,7 +117,7 @@ $$
 u(t) = K_p\,e(t) + K_i\!\!\int_{0}^{t}\! e(\tau)\,d\tau + K_d\,\frac{de(t)}{dt}
 $$
 
-where $e(t)=r(t)-y(t)$. Gains $\{K_p,K_i,K_d\}$ are first swept with Ziegler–Nichols, then refined via a **second-order inertia model**.
+
 
 ### Discrete Implementation (100 Hz)
 
@@ -145,8 +155,10 @@ sequenceDiagram
   IntakeController-->>Drive: reverse on ring detect
 ```
 
-*Worst-case input-to-voltage latency ≈ **2 ms**.*
-
 ---
+
+## Demo
+[![Watch the demo](https://i.imgur.com/BuXhpiK.png)](https://youtu.be/5xkvFR0hDIs)
+[![Watch the demo](https://i.imgur.com/1sCsBzb.png)](https://youtu.be/GQa3_nZoEAI)
 
 

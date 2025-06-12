@@ -126,7 +126,6 @@ void autonomous() {
   IntakeTask.resume();
   LiftTask.resume();
   LiftTask.notify();
-  ranAutonomous = true;                          // Set the flag to true so we know we ran an auton
   ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
 }
 
